@@ -1,0 +1,24 @@
+# Dependencias y resultados de compilación
+/node_modules/
+/.next/
+/out/
+/dist/
+/build/
+/coverage/
+*.tsbuildinfo
+next-env.d.ts
+
+# Configuración privada
+.env*
+!.env.example
+/.vercel/
+*.pem
+*.key
+
+# Registros y archivos del sistema
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.DS_Store
+Thumbs.db
