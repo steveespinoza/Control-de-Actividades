@@ -1,6 +1,6 @@
 # Requisitos no funcionales
 
-Este documento define las condiciones de calidad para el tablero personal descrito en [Requisitos funcionales](Requisitos-Funcionales.md). Se basa en [Problema y objetivo](../00-Inicio/Problema-y-Objetivo.md) y conserva las tecnologías descritas en el [README](../README.md).
+Este documento define las condiciones de calidad para el tablero personal descrito en [Requisitos funcionales](Requisitos-Funcionales.md). Se basa en [Problema y objetivo](../00-Inicio/Problema-y-Objetivo.md) y conserva las tecnologías descritas en el [README](../../README.md).
 
 Los criterios describen lo que deberá verificarse al implementar el sistema. No representan pruebas ejecutadas ni resultados obtenidos. Las metas que todavía necesitan datos de uso se identifican al final.
 
@@ -64,6 +64,7 @@ Las 200 tareas constituyen el volumen de referencia de rendimiento; el límite f
 **Criterios de verificación:**
 
 - Durante el desarrollo, la persistencia debe utilizar la base de datos de **Supabase**. Al terminar el desarrollo, todas las tareas deben guardarse en **localStorage**, independientemente de su estado. Los criterios de integridad y recuperación de cambios guardados deben verificarse con el almacenamiento de cada etapa.
+- Las tareas guardadas en Supabase durante el desarrollo no deben conservarse ni trasladarse a localStorage al cambiar de etapa. No se incluye una migración de esos datos.
 - Las reglas de estado y capacidad de RF-03 y RF-04 deben cumplirse al guardar los datos, también ante movimientos desde dos pestañas. Durante la fase con Supabase, deben verificarse además las solicitudes directas a la base de datos. Ocultar controles no basta para garantizar su cumplimiento.
 - En la versión final, las tareas guardadas deben recuperarse al recargar o volver a abrir la aplicación en el mismo navegador y sitio, siempre que sus datos locales se conserven. No se exige compartir el tablero entre navegadores o dispositivos.
 - Si localStorage no está disponible o rechaza una escritura, debe comunicarse el fallo sin informar que el cambio se guardó. El almacenamiento local no sustituye una política de respaldo y restauración.
@@ -94,7 +95,7 @@ Las 200 tareas constituyen el volumen de referencia de rendimiento; el límite f
 - Los datos introducidos deben validarse al guardar. Un título con etiquetas o código debe tratarse como texto, sin ejecutarlo en la interfaz.
 - Si la aplicación se publica en internet, sus comunicaciones deben utilizar HTTPS.
 - Durante la fase con Supabase, la configuración de acceso a los datos debe permitir únicamente las operaciones previstas para el tablero; no debe conceder administración de la base de datos al navegador.
-- El acceso a los datos de Supabase durante el desarrollo sin inicio de sesión debe concretarse para esa etapa. En la versión final, los datos se guardan localmente en el navegador y sitio utilizados, sin sincronización con Supabase.
+- Durante el desarrollo, el autor es la única persona con acceso al sistema, sin incorporar un inicio de sesión a la aplicación. En la versión final, los datos se guardan localmente en el navegador y sitio utilizados, sin sincronización con Supabase.
 
 ## RNF-08. Mantenibilidad y reproducibilidad
 
@@ -109,12 +110,8 @@ Las 200 tareas constituyen el volumen de referencia de rendimiento; el límite f
 - Las verificaciones deben cubrir las reglas críticas: límite de 10 tareas, imposibilidad de reabrir tareas completadas, persistencia y límites semanales en Lima.
 - Los resultados deben distinguir comprobaciones de código, pruebas con datos y verificaciones del entorno desplegado.
 
-## Metas y condiciones por concretar
+## Definición diferida: disponibilidad y recuperación
 
-| Tema                          | Definición pendiente                                                                                                                                                                                       |
-| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Transición de datos | Definir si deben conservarse los datos de Supabase al pasar a la versión final con localStorage y, en ese caso, cómo se trasladarán. El cambio de almacenamiento está decidido; el traslado no es automático por definición. |
-| Datos de desarrollo sin inicio de sesión | Definir quién podrá leer o modificar las tareas de la fase con Supabase. La versión final utiliza almacenamiento local por navegador y sitio. |
-| Disponibilidad y recuperación | Entorno de uso, tolerancia a interrupciones y necesidades de respaldo y restauración antes de guardar datos de uso real. No hay un porcentaje de disponibilidad ni una política de recuperación acordados. |
+El entorno de uso, la tolerancia a interrupciones y las necesidades de respaldo y restauración se definirán al comenzar la implementación de **localStorage**. Esta definición no bloquea el desarrollo con Supabase.
 
-Estas definiciones pendientes no cambian las reglas funcionales ya acordadas ni se consideran resueltas por conservar Supabase, S3 o Vercel como tecnologías previstas.
+Hasta esa etapa no se fija un porcentaje de disponibilidad ni una política de recuperación. Los criterios de guardado, manejo de errores e integridad ya definidos se mantienen vigentes; conservar Supabase, S3 o Vercel como tecnologías previstas no sustituye la definición posterior de esa política.

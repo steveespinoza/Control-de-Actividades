@@ -59,6 +59,7 @@ Estos requisitos se basan en [Problema y objetivo](../00-Inicio/Problema-y-Objet
 
 - Después de crear una tarea o cambiarla de columna, recargar la página debe conservar la información guardada.
 - Durante el desarrollo, las tareas y sus cambios deben guardarse en la base de datos de **Supabase**. Al terminar el desarrollo, la versión final debe utilizar **localStorage** para todas las tareas y sus estados.
+- Al cambiar a localStorage, no deben conservarse ni trasladarse las tareas existentes en Supabase. La conservación de cambios guardados se exige dentro de cada etapa, no entre ambos almacenamientos.
 - En la versión final, la persistencia debe conservar títulos, estados y fechas de finalización en el mismo navegador y sitio. No se define sincronización entre navegadores o dispositivos.
 - Abrir nuevamente la aplicación debe recuperar el estado guardado del tablero.
 - El sistema no debe informar que una operación se completó correctamente si no pudo guardar el cambio.

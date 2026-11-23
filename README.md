@@ -1,6 +1,6 @@
 # Control de Actividades
 
-Estoy preparando un tablero personal para organizar tareas en Pendiente, En curso y Completadas. El comportamiento previsto está descrito en los [requisitos funcionales](02-Requisitos/Requisitos-Funcionales.md); la aplicación todavía muestra una página inicial y las funciones del tablero están pendientes de implementación.
+Estoy preparando un tablero personal para organizar tareas en Pendiente, En curso y Completadas. El comportamiento previsto está descrito en los [requisitos funcionales](docs/02-Requisitos/Requisitos-Funcionales.md); la aplicación todavía muestra una página inicial y las funciones del tablero están pendientes de implementación.
 
 ## Tecnologías
 
@@ -60,16 +60,22 @@ npm run start
 ## Estructura
 
 ```text
-app/                  Página inicial, layout y estilos globales.
-00-Inicio/            Problema y objetivo del sistema.
-01-Usuarios/          Actor y perfil del usuario.
-02-Requisitos/        Requisitos funcionales y no funcionales.
-supabase/config.toml  Configuración local de Supabase.
+app/                    Página inicial, layout y estilos globales.
+docs/
+  00-Inicio/            Problema y objetivo del sistema.
+  01-Usuarios/          Actor y perfil del usuario.
+  02-Requisitos/        Requisitos funcionales y no funcionales.
+  03-Alcance/           Funciones incluidas y límites de la primera entrega.
+  04-Casos de Uso/      Historias de usuario y criterios de aceptación.
+supabase/config.toml    Configuración local de Supabase.
 ```
 
 ## Documentación
 
-- [Problema y objetivo](00-Inicio/Problema-y-Objetivo.md).
-- [Actores](01-Usuarios/Actores.md).
-- [Requisitos funcionales](02-Requisitos/Requisitos-Funcionales.md).
-- [Requisitos no funcionales](02-Requisitos/Requisitos-No-Funcionales.md).
+- [Problema y objetivo](docs/00-Inicio/Problema-y-Objetivo.md).
+- [Actores](docs/01-Usuarios/Actores.md).
+- [Requisitos funcionales](docs/02-Requisitos/Requisitos-Funcionales.md).
+- [Requisitos no funcionales](docs/02-Requisitos/Requisitos-No-Funcionales.md).
+- [Alcance del MVP](docs/03-Alcance/Alcance-MVP.md).
+- [Fuera de alcance](docs/03-Alcance/Fuera-de-Alcance.md).
+- [Historias de usuario](docs/04-Casos%20de%20Uso/Historias-de-Usuario.md).
