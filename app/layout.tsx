@@ -3,9 +3,8 @@ import type { ReactNode } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Gestión de proyectos",
-  description:
-    "Organización de actividades y seguimiento del trabajo de un equipo de arquitectos.",
+  title: "Control de Actividades",
+  description: "Tablero personal para organizar tareas y consultar el avance semanal.",
 };
 
 export default function RootLayout({
