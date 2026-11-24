@@ -14,23 +14,22 @@ Las exclusiones delimitan esta entrega. No representan funcionalidades desarroll
 | Información adicional | Prioridades, etiquetas, fechas límite, subtareas, comentarios y archivos adjuntos. La configuración prevista de S3 no incorpora una función de archivos al MVP. |
 | Automatizaciones e integraciones | Recordatorios, notificaciones, tareas recurrentes e integraciones con otros servicios. |
 | Vistas e informes adicionales | Calendario, reportes imprimibles y estadísticas distintas del conteo semanal de tareas completadas. |
-| Sincronización | Compartir o sincronizar tareas entre navegadores, dispositivos o usuarios. La versión final conserva sus datos en localStorage para el mismo navegador y sitio. |
-| Intercambio y copias automáticas | Importación, exportación y respaldos automáticos. No hay una función de transferencia o copia de tareas comprometida en esta entrega. |
-| Datos de desarrollo | Conservar o migrar a localStorage las tareas existentes en Supabase. Esos datos no forman parte de la entrega final. |
+| Sincronización | Compartir o sincronizar tareas entre navegadores, dispositivos o usuarios. La aplicación conserva sus datos en localStorage para el mismo navegador y sitio desde el inicio. |
+| Intercambio, respaldos y restauración | Importación, exportación, respaldos manuales o automáticos y restauración. Si se borran los datos del navegador, la aplicación no recuperará las tareas. |
 | Otras formas de distribución | Aplicaciones nativas y un modo sin conexión completo. La persistencia en localStorage no incluye por sí sola la carga de la aplicación sin conexión. |
 
 ## Límites que deben respetarse
 
-- **Supabase se utiliza durante el desarrollo.** La versión final guarda todas las tareas en **localStorage** y no utiliza Supabase para persistir o sincronizar el tablero.
+- **localStorage se utiliza desde el inicio del desarrollo.** Todas las tareas se guardan en el navegador y sitio utilizados.
 - **La capacidad de En curso se mantiene en 10 tareas.** No se incluye una pantalla para configurar ese máximo.
 - **Las 200 tareas son el volumen de evaluación de rendimiento.** No se ha definido una regla que impida crear otra tarea al llegar a esa cantidad, ni un compromiso de rendimiento para volúmenes mayores.
 - **El avance semanal es un conteo.** No incorpora horas trabajadas, porcentajes de productividad ni indicadores de desempeño adicionales.
 
-## Disponibilidad y recuperación: definición diferida
+## Pérdida de datos del navegador
 
-La disponibilidad y la recuperación de datos se abordarán al comenzar la implementación de **localStorage**, según los [requisitos no funcionales](../02-Requisitos/Requisitos-No-Funcionales.md). No se fija todavía una política de disponibilidad, respaldo o restauración.
+No se implementarán respaldos ni restauración. Si se borran los datos del sitio o del navegador, las tareas se pierden para la aplicación y no se recuperarán desde otra copia.
 
-Esta definición no bloquea el desarrollo con Supabase. Los requisitos vigentes de persistencia, integridad y manejo de errores se mantienen. Si al definir la recuperación se necesita una función que hoy está excluida, deberá actualizarse expresamente el alcance antes de incorporarla.
+La persistencia al recargar o volver a abrir exige que los datos locales se mantengan. Las reglas de integridad y manejo de errores de los [requisitos no funcionales](../02-Requisitos/Requisitos-No-Funcionales.md) siguen vigentes.
 
 ## Cambios de alcance
 

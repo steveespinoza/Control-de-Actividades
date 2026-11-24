@@ -2,7 +2,7 @@
 
 Este documento describe, paso a paso, cómo una tarea cambia de estado y cómo se comunica el resultado del guardado. Se basa en las [historias de usuario](../04-Casos%20de%20Uso/Historias-de-Usuario.md), el [modelo de datos](../05-Datos/Modelo-de-Datos.md) y la [arquitectura general](Arquitectura-General.md).
 
-Los recorridos describen el comportamiento previsto. Las funciones del tablero y su persistencia siguen pendientes de implementación y verificación.
+Los recorridos describen el comportamiento previsto. HU-01 implementa la consulta inicial y la lectura validada del tablero; la creación, el guardado, los movimientos y el avance semanal siguen pendientes de implementación y verificación.
 
 ## Punto de partida
 
@@ -55,7 +55,7 @@ Este recorrido está definido en [HU-05](../04-Casos%20de%20Uso/HU-05.%20Complet
 3. Si la solicitud intenta completarla otra vez, conserva el estado y la fecha originales. No registra otra finalización ni incrementa el conteo por ese intento.
 4. Si intenta devolverla a Pendiente o En curso, rechaza el movimiento y mantiene la tarea completada. La interfaz no ofrece controles de reapertura.
 
-Estas condiciones deben mantenerse también ante solicitudes simultáneas desde dos pestañas y ante solicitudes directas a Supabase durante el desarrollo.
+Estas condiciones deben mantenerse también ante solicitudes simultáneas desde dos pestañas que utilizan localStorage.
 
 ## 5. Resolver un fallo de guardado
 
@@ -67,14 +67,14 @@ Estas condiciones deben mantenerse también ante solicitudes simultáneas desde 
 
 Un rechazo por falta de capacidad comunica que se alcanzó el límite. Un fallo al consultar los datos se comunica como error de lectura y no se presenta como un tablero vacío.
 
-## Recorrido del guardado por etapa
+## Recorrido del guardado local
 
-| Etapa | Cómo se tramita el movimiento |
-| --- | --- |
-| Desarrollo con Supabase | La interfaz envía la solicitud a las operaciones de servidor de Next.js. El servidor valida y coordina el cambio con Supabase; Postgres hace cumplir las reglas al guardar. El resultado vuelve a la interfaz para confirmar el movimiento o comunicar el error. |
-| Versión final con localStorage | La interfaz tramita el movimiento mediante la lógica del navegador, que valida y coordina el acceso a localStorage. El resultado del guardado local permite confirmar el movimiento o comunicar el error. Todas las tareas utilizan ese almacenamiento, incluidas las completadas. |
+1. La interfaz envía la acción a la lógica de tareas del navegador e indica que la operación está en curso.
+2. La lógica consulta el estado vigente y coordina la validación y el cambio entre pestañas.
+3. Se guarda la colección consistente en localStorage. Todas las tareas utilizan ese almacenamiento, incluidas las completadas.
+4. El resultado permite confirmar el movimiento y actualizar la interfaz, o comunicar el error de guardado.
 
-El cambio de Supabase a localStorage ocurre al terminar el desarrollo. Mover o completar una tarea mantiene el almacenamiento de la etapa vigente. La recuperación de tareas al recargar y los límites de cada etapa están descritos en [HU-06](../04-Casos%20de%20Uso/HU-06.%20Continuar%20con%20mis%20tareas%20guardadas.md).
+localStorage se utiliza desde el inicio del desarrollo. Mover o completar una tarea mantiene ese almacenamiento. La recuperación al recargar exige que se conserven los datos locales. Si se borran los datos del navegador, no hay respaldos ni restauración, según [HU-06](../04-Casos%20de%20Uso/HU-06.%20Continuar%20con%20mis%20tareas%20guardadas.md).
 
 ## Operaciones desde dos pestañas
 
@@ -82,10 +82,10 @@ Si hay **9 tareas en curso** y dos pestañas intentan ingresar tareas distintas,
 
 Si una pestaña completa una tarea, otra no puede devolverla a Pendiente o En curso usando el estado que había leído antes de esa finalización. Dos solicitudes para completar la misma tarea deben conservar una sola finalización y su fecha original.
 
-El mecanismo concreto de coordinación depende del almacenamiento de cada etapa y queda pendiente de implementación y verificación con operaciones concurrentes controladas.
+El mecanismo concreto de coordinación del almacenamiento local queda pendiente de implementación y verificación con operaciones concurrentes controladas.
 
 ## Estado y referencias
 
 Los flujos respetan los [requisitos funcionales](../02-Requisitos/Requisitos-Funcionales.md) y los [requisitos no funcionales](../02-Requisitos/Requisitos-No-Funcionales.md). La alternativa para cambiar el estado debe permitir el uso con teclado y, si se incorpora arrastrar y soltar, ofrecer una forma de mover sin arrastrar.
 
-**Estado:** flujos documentados, pendientes de implementación y verificación. No se han ejecutado movimientos con datos reales, pruebas de concurrencia ni comprobaciones de rendimiento como parte de este documento.
+**Estado:** la consulta inicial tiene implementación y comprobaciones descritas en [HU-01](../04-Casos%20de%20Uso/HU-01.%20Consultar%20mi%20tablero.md#verificación-de-esta-entrega). Los flujos de creación, guardado, movimientos y avance semanal siguen pendientes. No se han ejecutado movimientos con datos reales, pruebas de concurrencia ni comprobaciones de rendimiento como parte de este documento.

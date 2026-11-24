@@ -104,13 +104,13 @@ La explicación y los criterios detallados están en [HU-06. Continuar con mis t
 
 **Criterios de aceptación:**
 
-- Dado que creé tareas y guardé cambios de estado, cuando recargo la página o vuelvo a abrir la aplicación dentro de la misma etapa de almacenamiento, entonces recupero la información guardada.
-- Dado que estoy en la fase de desarrollo, cuando guardo un cambio, entonces se utiliza **Supabase**. En esa fase, solo el autor tiene acceso al sistema.
-- Dado que utilizo la versión final, cuando guardo y vuelvo a abrir el tablero en el mismo navegador y sitio, entonces se recuperan desde **localStorage** los títulos, estados y fechas de finalización, siempre que se conserven sus datos locales.
-- Dado que se realiza el cambio de Supabase a localStorage al finalizar el desarrollo, cuando se inicia esa etapa, entonces las tareas de Supabase no se conservan ni se trasladan al almacenamiento local.
-- Dado que el almacenamiento de la etapa rechaza una escritura, cuando se comunica el resultado, entonces se muestra el fallo y no se confirma un guardado exitoso.
+- Dado que creé tareas y guardé cambios de estado y se conservan los datos locales, cuando recargo o vuelvo a abrir la aplicación en el mismo navegador y sitio, entonces recupero títulos, estados y fechas de finalización.
+- Dado que utilizo la aplicación durante el desarrollo o en la entrega final, cuando guardo tareas pendientes, en curso o completadas, entonces se utiliza **localStorage desde el inicio**.
+- Dado que se borraron los datos del sitio o del navegador, cuando vuelvo a abrir la aplicación, entonces las tareas anteriores no se recuperan ni se restauran desde otra copia.
+- Dado que localStorage no está disponible o rechaza una escritura, cuando se comunica el resultado, entonces se muestra el fallo y no se confirma un guardado exitoso.
+- Dado que falla la lectura, cuando abro o recargo el tablero, entonces se comunica el error sin presentar el fallo como si no hubiera tareas.
 
-La versión final no sincroniza tareas entre navegadores o dispositivos. La disponibilidad y la recuperación se definirán al implementar localStorage, conforme a los requisitos no funcionales.
+La aplicación no sincroniza tareas entre navegadores o dispositivos ni implementa respaldos o restauración. Su persistencia exige que los datos locales se conserven, conforme a los requisitos no funcionales.
 
 ## HU-07. Revisar lo que terminé en la semana
 

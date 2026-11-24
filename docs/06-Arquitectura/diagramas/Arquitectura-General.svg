@@ -1,67 +1,43 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="880" viewBox="0 0 1000 880" role="img" aria-labelledby="title description">
-  <title id="title">Arquitectura general prevista — Control de Actividades</title>
-  <desc id="description">Dos etapas separadas. Desarrollo: presentación en el navegador con React y Tailwind, aplicación en el servidor Next.js con TypeScript y persistencia en Supabase con Postgres. Versión final: Next.js entrega la aplicación; dentro del navegador se ejecutan la presentación, las reglas en TypeScript y la persistencia en localStorage. No hay sincronización ni traslado de tareas entre etapas. Los componentes funcionales están pendientes de implementación.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="900" viewBox="0 0 840 900" role="img" aria-labelledby="title description">
+  <title id="title">Arquitectura local — Control de Actividades</title>
+  <desc id="description">Next.js entrega la aplicación. La arquitectura prevista sitúa la presentación con React y Tailwind, las reglas con TypeScript y localStorage en el navegador. HU-01 implementa la consulta y lectura validada. El guardado, los movimientos y su coordinación entre pestañas siguen pendientes. No hay sincronización, respaldos ni restauración. Si se borran los datos locales, las tareas se pierden para la aplicación.</desc>
   <defs>
     <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
       <path d="M0 0L8 4L0 8Z" fill="#334155"/>
     </marker>
   </defs>
-  <rect width="1000" height="880" fill="#fff"/>
-  <g fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5">
-    <rect x="25" y="85" width="440" height="690" rx="8"/>
-    <rect x="515" y="85" width="460" height="690" rx="8"/>
-  </g>
-  <rect x="540" y="280" width="410" height="460" rx="8" fill="#fff" stroke="#64748b" stroke-width="1.5"/>
-  <g stroke="#334155" stroke-width="1.5">
-    <rect x="50" y="150" width="390" height="110" rx="6" fill="#e8edf2"/>
-    <rect x="50" y="355" width="390" height="130" rx="6" fill="#e8edf2"/>
-    <rect x="50" y="585" width="390" height="110" rx="6" fill="#e8edf2"/>
-    <rect x="550" y="140" width="390" height="80" rx="6" fill="#fff"/>
-    <rect x="560" y="330" width="370" height="90" rx="6" fill="#e8edf2"/>
-    <rect x="560" y="475" width="370" height="85" rx="6" fill="#e8edf2"/>
-    <rect x="560" y="615" width="370" height="85" rx="6" fill="#e8edf2"/>
+  <rect width="840" height="900" fill="#fff"/>
+  <rect x="180" y="90" width="480" height="90" rx="6" fill="#f8fafc" stroke="#334155" stroke-width="1.5"/>
+  <rect x="80" y="245" width="680" height="480" rx="8" fill="#f8fafc" stroke="#64748b" stroke-width="1.5"/>
+  <g fill="#e8edf2" stroke="#334155" stroke-width="1.5">
+    <rect x="150" y="310" width="540" height="90" rx="6"/>
+    <rect x="150" y="450" width="540" height="95" rx="6"/>
+    <rect x="150" y="595" width="540" height="95" rx="6"/>
   </g>
   <g fill="none" stroke="#334155" stroke-width="2" marker-end="url(#arrow)">
-    <path d="M245 260V355"/>
-    <path d="M245 485V585"/>
-    <path d="M745 220V280"/>
-    <path d="M745 420V475"/>
-    <path d="M745 560V615"/>
+    <path d="M420 180V245"/>
+    <path d="M420 400V450"/>
+    <path d="M420 545V595"/>
   </g>
   <g fill="#17212e" font-family="Arial, Helvetica, sans-serif" text-anchor="middle">
-    <text x="500" y="45" font-size="25" font-weight="bold">Control de Actividades · Arquitectura prevista</text>
-    <g font-size="21" font-weight="bold">
-      <text x="245" y="121">Desarrollo con Supabase</text>
-      <text x="745" y="121">Versión final con localStorage</text>
-    </g>
-    <g font-size="18" font-weight="bold">
-      <text x="245" y="182">Presentación · Navegador</text>
-      <text x="245" y="389">Aplicación · Servidor Next.js</text>
-      <text x="245" y="619">Persistencia · Supabase</text>
-      <text x="745" y="173">Next.js entrega la aplicación</text>
-      <text x="745" y="310">Navegador del usuario</text>
-      <text x="745" y="364">Presentación · React y Tailwind</text>
-      <text x="745" y="510">Aplicación · TypeScript</text>
-      <text x="745" y="649">Persistencia · localStorage</text>
+    <text x="420" y="45" font-size="24" font-weight="bold">Control de Actividades · Arquitectura local</text>
+    <g font-size="20" font-weight="bold">
+      <text x="420" y="126">Next.js 16 · App Router</text>
+      <text x="420" y="282">Navegador del usuario</text>
+      <text x="420" y="345">Presentación · React 19 y Tailwind CSS 4</text>
+      <text x="420" y="486">Aplicación · TypeScript</text>
+      <text x="420" y="631">Persistencia · localStorage</text>
     </g>
     <g font-size="16">
-      <text x="245" y="212">React 19 y Tailwind CSS 4</text>
-      <text x="245" y="236">Tablero y acciones del usuario</text>
-      <text x="245" y="422">Validación y coordinación con TypeScript</text>
-      <text x="245" y="451">Consultas y cambios de tareas</text>
-      <text x="245" y="649">Postgres: tareas y reglas al guardar</text>
-      <text x="245" y="677">Esquema y permisos mediante migraciones</text>
-      <text x="745" y="200">Páginas, componentes y recursos</text>
-      <text x="745" y="394">Tablero y acciones del usuario</text>
-      <text x="745" y="539">Reglas y coordinación de cambios locales</text>
-      <text x="745" y="680">Todas las tareas, incluidas las completadas</text>
-      <text x="500" y="816">Etapas distintas: sin sincronización ni traslado de tareas de desarrollo.</text>
-      <text x="500" y="847">Diagrama de diseño. Tablero y persistencia pendientes de implementación.</text>
+      <text x="420" y="155">Entrega de páginas, componentes y recursos</text>
+      <text x="420" y="375">Tablero, acciones y mensajes de resultado</text>
+      <text x="420" y="517">Validaciones, transiciones y coordinación entre pestañas</text>
+      <text x="420" y="662">Todas las tareas, incluidas las completadas</text>
+      <text x="420" y="803">Sin sincronización, respaldos ni restauración.</text>
+      <text x="420" y="838">Si se borran los datos del navegador, las tareas se pierden.</text>
     </g>
-    <g fill="#475569" font-size="14" text-anchor="start">
-      <text x="260" y="310">solicitud</text>
-      <text x="260" y="540">lectura / guardado</text>
-      <text x="760" y="255">entrega</text>
-    </g>
+    <text x="420" y="770" font-size="19" font-weight="bold">localStorage desde el inicio del desarrollo</text>
+    <text x="420" y="875" font-size="14">Consulta implementada. Guardado y movimientos pendientes.</text>
+    <text x="435" y="218" fill="#475569" font-size="14" text-anchor="start">entrega</text>
   </g>
 </svg>

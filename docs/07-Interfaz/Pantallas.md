@@ -31,4 +31,6 @@ Estos ajustes completan la interfaz del alcance vigente. Las imágenes se mantie
 
 ## Estado
 
-**Prototipos documentados.** Las vistas no acreditan una interfaz implementada ni pruebas de funcionamiento, accesibilidad o compatibilidad realizadas. El comportamiento esperado se conserva en los requisitos y en los [flujos de una tarea](../06-Arquitectura/Flujos.md).
+**Prototipos documentados.** Las imágenes siguen siendo referencias de baja fidelidad. HU-01 implementa una primera interfaz con fondo oscuro y acentos naranja, columnas paralelas en escritorio y apiladas en móvil, títulos, ocupación de En curso y estados de carga, vacío y error. No incluye todavía creación, movimientos ni avance semanal.
+
+La revisión visual del tablero vacío y sus límites se describen en [HU-01](../04-Casos%20de%20Uso/HU-01.%20Consultar%20mi%20tablero.md#verificación-de-esta-entrega). Las capturas del prototipo no acreditan pruebas de funcionamiento ni la compatibilidad completa. El comportamiento esperado se conserva en los requisitos y en los [flujos de una tarea](../06-Arquitectura/Flujos.md).

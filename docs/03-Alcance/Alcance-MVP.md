@@ -14,7 +14,7 @@ Este alcance reúne lo definido en [Problema y objetivo](../00-Inicio/Problema-y
 | Creación de tareas | Registrar un título no vacío y guardar la nueva tarea en **Pendiente**. | RF-02 |
 | Cambio de estado | Mover tareas pendientes o en curso entre las columnas. Una tarea que llega a **Completadas** queda cerrada y no puede reabrirse. | RF-03 |
 | Límite de trabajo en curso | Admitir hasta **10 tareas** en **En curso**, mostrar la ocupación y rechazar movimientos que superen ese máximo. | RF-04 |
-| Persistencia | Conservar títulos, estados y fechas de finalización al recargar o volver a abrir la aplicación, según la etapa de almacenamiento descrita más adelante. | RF-05 |
+| Persistencia | Conservar títulos, estados y fechas de finalización en localStorage al recargar o volver a abrir la aplicación, mientras se mantengan los datos del navegador. | RF-05 |
 | Avance semanal | Consultar cuántas tareas se completaron en la semana correspondiente, mostrando el intervalo de fechas y **0** cuando no hubo finalizaciones. | RF-06 |
 
 Los errores de carga o guardado deben comunicarse sin presentar una operación fallida como exitosa ni perder o duplicar tareas por un movimiento.
@@ -27,20 +27,15 @@ Los errores de carga o guardado deben comunicarse sin presentar una operación f
 - Cada tarea cuenta una sola vez en la semana en que se completó. La semana comienza el **lunes a las 00:00 en America/Lima (Perú)** y termina al comenzar el lunes siguiente, sin incluir ese instante.
 - Las **200 tareas totales** son el volumen de referencia para evaluar rendimiento, sumando las tres columnas. No se ha definido un bloqueo de creación al llegar a esa cantidad.
 
-## Almacenamiento por etapas
+## Almacenamiento local desde el inicio
 
-| Etapa | Almacenamiento previsto | Condición de cierre |
-| --- | --- | --- |
-| Desarrollo | Base de datos de **Supabase** para guardar y verificar las tareas y sus cambios. Solo el autor tiene acceso al sistema. | Comprobar la persistencia y las reglas del tablero en esa etapa, sin incorporar un inicio de sesión. |
-| Entrega final del MVP | **localStorage** para todas las tareas, independientemente de su estado. | Comprobar que se recuperan títulos, estados y fechas en el mismo navegador y sitio y que se cumplen las reglas funcionales y de calidad aplicables. |
+Todas las tareas se guardan en **localStorage desde el inicio del desarrollo**, incluidas las completadas. Se conservan títulos, estados y fechas de finalización al recargar o volver a abrir la aplicación en el mismo navegador y sitio, siempre que sus datos locales se mantengan.
 
-El paso a localStorage se realiza al terminar el desarrollo; no se activa por completar una tarea. La entrega final no utiliza Supabase para persistir o sincronizar el tablero.
+El cambio de estado de una tarea no cambia su almacenamiento.
 
-Los datos finales quedan asociados al navegador y sitio utilizados. Su conservación depende de que esos datos locales se mantengan. No se incluye sincronización entre navegadores o dispositivos.
+No hay sincronización entre navegadores o dispositivos. **No se implementan respaldos ni restauración:** si se borran los datos del sitio o del navegador, las tareas se pierden para la aplicación.
 
-Las tareas existentes en Supabase no se conservarán ni se trasladarán al pasar a localStorage. La versión final comienza sin tareas procedentes de la fase de desarrollo; no se implementará una migración de esos datos.
-
-Se mantienen las tecnologías descritas en el [README](../../README.md). Conservar Supabase o S3 en la configuración no incorpora funciones adicionales al producto.
+Se conservan las tecnologías y la configuración existentes descritas en el [README](../../README.md). La presencia de S3 en el proyecto no incorpora funciones adicionales al producto.
 
 ## Fuera del alcance de esta entrega
 
@@ -52,22 +47,21 @@ Los siguientes puntos deben comprobarse sobre la implementación; todavía no se
 
 - [ ] Se puede abrir el tablero, crear tareas, moverlas dentro de las reglas y consultar el avance semanal, conforme a RF-01 a RF-06.
 - [ ] El máximo de 10 tareas en curso y la prohibición de reapertura se mantienen también ante operaciones desde dos pestañas; los reintentos no duplican tareas ni finalizaciones.
-- [ ] La versión final recupera sus datos desde localStorage al recargar y volver a abrir la aplicación en el mismo navegador y sitio.
+- [ ] La aplicación recupera sus datos desde localStorage al recargar y volver a abrir en el mismo navegador y sitio, mientras se mantengan sus datos locales.
 - [ ] El conteo semanal utiliza Lima y clasifica correctamente las finalizaciones a ambos lados del lunes a las 00:00.
 - [ ] La carga del tablero, la creación, los cambios de columna y la consulta semanal cumplen el máximo de **3 segundos**, con el volumen de **200 tareas** y las condiciones de **Wi-Fi o 4G** de RNF-04.
 - [ ] Se verifica el uso en computadoras y dispositivos móviles, con teclado, ratón e interacción táctil según corresponda. Se documenta la matriz de pruebas respecto al objetivo de las **tres últimas versiones estables de todos los navegadores**; las combinaciones no probadas quedan identificadas.
 - [ ] Se revisan los demás criterios de calidad de RNF-01 a RNF-08 y se registran los resultados, las limitaciones y los pendientes que afecten a la entrega.
 - [ ] `npm run lint`, `npm run typecheck` y `npm run build` terminan correctamente. Estas comprobaciones complementan las pruebas de uso y de datos.
-- [ ] La documentación permite preparar y ejecutar el proyecto y diferencia la fase con Supabase de la persistencia final en localStorage.
-- [ ] La transición a localStorage respeta la decisión de no conservar ni trasladar las tareas de Supabase.
-- [ ] Al implementar localStorage, se definen y documentan las condiciones de disponibilidad y recuperación correspondientes a esa etapa.
+- [ ] La documentación permite preparar y ejecutar el proyecto y describe localStorage como almacenamiento desde el inicio.
+- [ ] La documentación indica que no hay respaldos ni restauración si se borran los datos del navegador.
 
-## Disponibilidad y recuperación: definición por etapa
+## Conservación y pérdida de datos
 
-La disponibilidad y la recuperación se abordarán al comenzar la implementación de **localStorage**. En esa etapa se definirán el entorno de uso, la tolerancia a interrupciones y las necesidades de respaldo y restauración. No se fija todavía una política ni una garantía de recuperación ante el borrado de datos locales.
+Los datos permanecen en el mismo navegador y sitio mientras se conserven sus datos locales. Borrarlos implica perder las tareas para la aplicación. No habrá respaldos ni restauración.
 
-Esta definición queda diferida y no bloquea el desarrollo con Supabase. El acceso exclusivo del autor durante el desarrollo y la decisión de no trasladar sus tareas ya están definidos.
+Se mantienen las obligaciones de informar errores de lectura o escritura y de preservar la integridad de los cambios confirmados. La ausencia de respaldos no permite tratar un fallo de lectura como un tablero vacío ni confirmar un guardado fallido.
 
 ## Estado actual
 
-El repositorio contiene la base técnica, una página inicial y la documentación de requisitos. Las funciones del tablero, la persistencia y el avance semanal están pendientes de implementación. La aprobación del alcance y la verificación del MVP no se dan por realizadas al completar este documento.
+El repositorio contiene la base técnica, la documentación y la consulta de HU-01: lectura validada de localStorage, tres columnas, títulos, ocupación de En curso y estados de carga, vacío y error. Crear y mover tareas, guardar cambios y consultar el avance semanal siguen pendientes. Las verificaciones y sus límites están en [HU-01](../04-Casos%20de%20Uso/HU-01.%20Consultar%20mi%20tablero.md#verificación-de-esta-entrega); la aprobación del MVP sigue pendiente.
