@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import FormularioTarea from "./formulario-tarea";
 import { leerTareas, type LecturaTareas } from "../lib/client/tareas";
 import { MAX_TAREAS_EN_CURSO, type EstadoTarea } from "../lib/tareas";
 
@@ -12,6 +13,22 @@ const columnas: { estado: EstadoTarea; titulo: string; vacio: string }[] = [
 
 export default function Tablero() {
   const [consulta, setConsulta] = useState<LecturaTareas | { estado: "cargando" }>({ estado: "cargando" });
+  const [formularioVisible, setFormularioVisible] = useState(false);
+  const [registroConfirmado, setRegistroConfirmado] = useState(false);
+  const botonNuevaTarea = useRef<HTMLButtonElement>(null);
+  const devolverFoco = useRef(false);
+
+  function cerrarFormulario() {
+    devolverFoco.current = true;
+    setFormularioVisible(false);
+  }
+
+  useEffect(() => {
+    if (!formularioVisible && devolverFoco.current) {
+      botonNuevaTarea.current?.focus();
+      devolverFoco.current = false;
+    }
+  }, [formularioVisible]);
 
   useEffect(() => {
     let activo = true;
@@ -48,10 +65,22 @@ export default function Tablero() {
 
   return (
     <div>
+      <div className="mb-5 flex justify-end">
+        <button ref={botonNuevaTarea} type="button" aria-expanded={formularioVisible} aria-controls="formulario-tarea" disabled={formularioVisible} onClick={() => { setRegistroConfirmado(false); setFormularioVisible(true); }} className="flex min-h-11 items-center gap-2 rounded-lg bg-(--primary) px-4 py-3 text-sm font-semibold text-(--on-primary) hover:bg-(--primary-hover) active:bg-(--primary-active) disabled:cursor-default disabled:opacity-60">
+          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5v14M5 12h14" /></svg>
+          Nueva tarea
+        </button>
+      </div>
+      {formularioVisible && <FormularioTarea onCancelar={cerrarFormulario} onGuardada={(tareas) => {
+        setConsulta({ estado: "lista", tareas });
+        setRegistroConfirmado(true);
+        cerrarFormulario();
+      }} />}
+      {registroConfirmado && <p role="status" className="mb-5 text-sm text-(--primary-text)">Tarea registrada en Pendiente.</p>}
       {consulta.tareas.length === 0 && (
         <div role="status" className="mb-6 rounded-xl border border-(--border) bg-(--surface) px-5 py-4">
           <p className="font-semibold">Tu tablero está vacío</p>
-          <p className="mt-1 text-sm leading-6 text-(--text-muted)">Aquí verás tus tareas organizadas por estado.</p>
+          <p className="mt-1 text-sm leading-6 text-(--text-muted)">Registra tu primera tarea para empezar.</p>
         </div>
       )}
       <div className="grid items-start gap-5 md:grid-cols-3" aria-label="Tareas por estado">

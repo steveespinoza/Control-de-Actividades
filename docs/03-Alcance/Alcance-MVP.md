@@ -64,4 +64,4 @@ Se mantienen las obligaciones de informar errores de lectura o escritura y de pr
 
 ## Estado actual
 
-El repositorio contiene la base técnica, la documentación y la consulta de HU-01: lectura validada de localStorage, tres columnas, títulos, ocupación de En curso y estados de carga, vacío y error. Crear y mover tareas, guardar cambios y consultar el avance semanal siguen pendientes. Las verificaciones y sus límites están en [HU-01](../04-Casos%20de%20Uso/HU-01.%20Consultar%20mi%20tablero.md#verificación-de-esta-entrega); la aprobación del MVP sigue pendiente.
+El repositorio contiene la base técnica, la documentación, la consulta de HU-01 y el registro de HU-02. El formulario crea pendientes en localStorage y actualiza el tablero solo después del guardado. Los movimientos, su guardado y el avance semanal siguen pendientes. Las verificaciones y sus límites están en [HU-01](../04-Casos%20de%20Uso/HU-01.%20Consultar%20mi%20tablero.md#verificación-de-esta-entrega) y [HU-02](../04-Casos%20de%20Uso/HU-02.%20Registrar%20un%20pendiente.md#verificación-en-navegador-y-pendientes); la aprobación del MVP sigue pendiente.

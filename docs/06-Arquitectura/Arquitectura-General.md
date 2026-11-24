@@ -2,7 +2,7 @@
 
 La aplicación se organiza en tres capas lógicas: **presentación**, **aplicación y reglas**, y **persistencia**. Conserva una sola base de código con Next.js 16, React 19, TypeScript estricto y Tailwind CSS 4, y utiliza **localStorage desde el inicio del desarrollo**.
 
-Este documento describe la arquitectura prevista para las [historias de usuario](../04-Casos%20de%20Uso/Historias-de-Usuario.md) y el [modelo de datos](../05-Datos/Modelo-de-Datos.md). HU-01 implementa la consulta del tablero y la lectura validada de localStorage; la creación, los movimientos, el guardado y el avance semanal siguen pendientes.
+Este documento describe la arquitectura prevista para las [historias de usuario](../04-Casos%20de%20Uso/Historias-de-Usuario.md) y el [modelo de datos](../05-Datos/Modelo-de-Datos.md). HU-01 implementa la consulta del tablero y HU-02 el registro de pendientes en localStorage; los movimientos y el avance semanal siguen pendientes.
 
 ## Diagrama general
 
@@ -29,7 +29,7 @@ La organización prevista en archivos se detalla en [Estructura del proyecto](Es
 ## Reglas en los límites de la arquitectura
 
 - **Guardado consistente:** completar una tarea y registrar su fecha debe ser una sola operación. Repetir la finalización conserva la fecha original y no aumenta el conteo semanal.
-- **Operaciones simultáneas:** el máximo de 10 tareas en curso y el cierre definitivo deben mantenerse ante solicitudes desde dos pestañas. El mecanismo concreto de coordinación está pendiente de implementación y pruebas.
+- **Operaciones simultáneas:** HU-02 coordina lectura y escritura del registro mediante un bloqueo exclusivo de Web Locks llamado `control-de-actividades:tareas`. Requiere un contexto seguro y un navegador compatible; sin Web Locks no se guarda. Los futuros movimientos deberán compartirlo para respetar el máximo de 10 tareas en curso y el cierre definitivo, todavía pendientes de implementación.
 - **Fechas:** el momento de finalización conserva una referencia temporal explícita. La clasificación semanal y las fechas mostradas utilizan America/Lima, con el inicio del lunes incluido y el comienzo del lunes siguiente excluido.
 - **Acceso:** el usuario abre el tablero sin inicio de sesión. Cada navegador y sitio conserva sus propios datos. Las credenciales de los servicios conservados no son necesarias para el almacenamiento del tablero ni deben enviarse al navegador.
 - **Errores de datos:** una lectura fallida se comunica como error. Una escritura fallida no se confirma como guardada y un movimiento no debe perder ni duplicar tareas.
@@ -51,11 +51,12 @@ La conservación de los datos depende del navegador. Esta decisión no fija un p
 | --- | --- |
 | Base de Next.js | Página del tablero, layout en español, estilos y comandos de desarrollo, lint, tipos y compilación definidos. |
 | Consulta del tablero y localStorage | Lectura y validación implementadas en HU-01, con carga, vacío, error, columnas, títulos y ocupación de En curso. |
-| Escrituras y demás funciones | Creación, movimientos, coordinación entre pestañas y avance semanal pendientes de implementación. |
+| Registro de pendientes | Formulario, validación y guardado de HU-02 con Web Locks; conserva la colección vigente y solo confirma después de escribir. |
+| Demás funciones | Movimientos, su coordinación entre pestañas y avance semanal pendientes de implementación. |
 | Modelo de datos | Documenta la colección local y sus reglas de validación e integridad. |
 | S3 y Vercel | Configuración conservada de S3 y destino previsto de despliegue, sin integración funcional de archivos ni despliegue verificado. |
 
-Las comprobaciones de consulta y sus límites están en [HU-01](../04-Casos%20de%20Uso/HU-01.%20Consultar%20mi%20tablero.md#verificación-de-esta-entrega). El guardado y la coordinación entre pestañas deberán comprobarse al implementarse.
+Las comprobaciones de consulta están en [HU-01](../04-Casos%20de%20Uso/HU-01.%20Consultar%20mi%20tablero.md#verificación-de-esta-entrega), y las de registro, coordinación y sus límites en [HU-02](../04-Casos%20de%20Uso/HU-02.%20Registrar%20un%20pendiente.md#verificación-en-navegador-y-pendientes). La contención simultánea controlada entre pestañas reales sigue pendiente de verificar.
 
 ## Referencias
 

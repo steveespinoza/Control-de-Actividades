@@ -1,6 +1,6 @@
 # Control de Actividades
 
-Estoy preparando un tablero personal para organizar tareas en Pendiente, En curso y Completadas. La consulta de HU-01 ya muestra las tareas guardadas en localStorage, con estados de carga, vacío y error. Crear y mover tareas y consultar el avance semanal siguen pendientes, según los [requisitos funcionales](docs/02-Requisitos/Requisitos-Funcionales.md).
+Estoy preparando un tablero personal para organizar tareas en Pendiente, En curso y Completadas. HU-01 permite consultar las tareas guardadas y HU-02 permite registrar nuevos pendientes en localStorage. Los movimientos y el avance semanal siguen pendientes, según los [requisitos funcionales](docs/02-Requisitos/Requisitos-Funcionales.md).
 
 ## Tecnologías
 
@@ -21,11 +21,13 @@ npm ci
 npm run dev
 ```
 
-Abre [http://localhost:3000](http://localhost:3000). El tablero funciona sin credenciales ni servicios externos. En un navegador sin tareas guardadas muestra las tres columnas vacías; la creación llegará con HU-02.
+Abre [http://localhost:3000](http://localhost:3000). El tablero funciona sin credenciales ni servicios externos. Pulsa **Nueva tarea**, escribe un título y selecciona **Guardar tarea**. La tarea aparece en Pendiente después de guardarse. Los títulos vacíos o compuestos solo por espacios se rechazan; si el guardado falla, el título permanece en el formulario.
 
 ## Persistencia local y conservación de datos
 
-El tablero consulta **localStorage desde el inicio del desarrollo**. Lee un arreglo JSON de tareas en la clave `control-de-actividades:tareas`, según el [modelo de datos](docs/05-Datos/Modelo-de-Datos.md#persistencia-en-localstorage). HU-01 solo lee y valida: no crea, modifica ni elimina datos. La escritura sigue pendiente.
+El tablero utiliza **localStorage desde el inicio del desarrollo**. La clave `control-de-actividades:tareas` contiene un arreglo JSON de tareas, según el [modelo de datos](docs/05-Datos/Modelo-de-Datos.md#persistencia-en-localstorage). La consulta solo lee y valida. El registro añade una tarea en Pendiente con UUID y fecha de finalización nula, conservando las anteriores.
+
+El registro coordina lectura y escritura entre pestañas mediante Web Locks. Requiere un navegador con esa API y `crypto.randomUUID()`, en un contexto seguro como HTTPS o localhost. Si no dispone de Web Locks, informa el problema sin guardar. Las otras pestañas muestran las nuevas tareas al recargar o al registrar otra; no hay actualización visual en tiempo real.
 
 **No habrá respaldos ni restauración.** Si se borran los datos del sitio o del navegador, las tareas se pierden para la aplicación. La recarga y la reapertura conservarán lo guardado mientras esos datos locales se mantengan. No hay sincronización entre navegadores o dispositivos.
 
@@ -38,6 +40,7 @@ El tablero no necesita variables de S3 para su almacenamiento local. `.env.examp
 ## Comprobaciones
 
 ```bash
+npm test
 npm run lint
 npm run typecheck
 npm run build
@@ -49,12 +52,21 @@ npm run build
 npm run start
 ```
 
+### Pruebas de tareas
+
+`npm test` ejecuta 38 pruebas con el ejecutor de Node.js: 20 de [lectura](tests/leer-tareas.test.mjs) y 18 de [registro](tests/registrar-tarea.test.mjs). Requiere las dependencias instaladas con `npm ci`; no necesita levantar la aplicación ni configurar credenciales.
+
+Las suites comparten [un cargador de los módulos reales](tests/soporte/modulos-tareas.mjs): TypeScript los transpila a una carpeta temporal del sistema, que elimina al terminar. La suite de lectura comprueba integridad y ausencia de escrituras. La de registro comprueba validación, creación, conservación de datos, fallos, reintentos y espera del bloqueo. El almacenamiento y el administrador de bloqueos están simulados; no se accede a los datos reales del navegador.
+
+Los casos y resultados esperados están en [HU-01](docs/04-Casos%20de%20Uso/HU-01.%20Consultar%20mi%20tablero.md#pruebas-automatizadas-de-lectura) y [HU-02](docs/04-Casos%20de%20Uso/HU-02.%20Registrar%20un%20pendiente.md#pruebas-automatizadas-de-registro). En navegador se comprobó el registro en escritorio y móvil, la validación, la cancelación, el foco, la recarga, los títulos largos y dos pestañas abiertas. Quedan pendientes los fallos forzados de almacenamiento en la interfaz, la espera prolongada y los envíos rápidos duplicados, la evaluación con tecnologías de asistencia, la matriz completa de navegadores y el rendimiento con Wi-Fi y 4G.
+
 ## Estructura
 
 ```text
 app/                    Página del tablero, layout y estilos globales.
-  _components/          Consulta del tablero y sus estados de interfaz.
-  lib/                  Tipo Tarea, validación y lectura de localStorage.
+  _components/          Tablero y formulario de registro.
+  lib/                  Tipo Tarea, validación, lectura y registro en localStorage.
+tests/                  Pruebas automatizadas de lectura y registro.
 docs/
   00-Inicio/            Problema y objetivo del sistema.
   01-Usuarios/          Actor y perfil del usuario.
