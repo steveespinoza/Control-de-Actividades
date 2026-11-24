@@ -14,6 +14,7 @@ La tabla siguiente identifica el código existente. El árbol posterior incluye 
 | `app/_components/tablero.tsx` | Consulta de HU-01: columnas, títulos, ocupación de En curso y estados de carga, vacío y error. |
 | `app/lib/tareas.ts` | Tipo Tarea, validación de atributos y máximo de tareas en curso. |
 | `app/lib/client/tareas.ts` | Clave de almacenamiento, lectura y validación de la colección de tareas; sin escrituras. |
+| `tests/leer-tareas.test.mjs` | Veinte pruebas de la función real de lectura con almacenamiento simulado, ejecutadas mediante `npm test`. |
 | `docs/` | Requisitos, historias, modelo de datos y diseño de arquitectura. |
 
 Las dependencias y los comandos existentes están en `package.json`. Se mantienen TypeScript estricto y el alias `@/*` hacia la raíz de `tsconfig.json`.
@@ -38,7 +39,7 @@ app/
     └── client/
         └── tareas.ts                Lectura, validación y guardado en localStorage.
 
-tests/                               Pruebas futuras de reglas, fechas y persistencia.
+tests/                               Pruebas de lectura existentes; otras pruebas se añadirán con sus historias.
 docs/                                Documentación del proyecto.
 package.json                         Dependencias y comandos.
 package-lock.json                    Versiones resueltas.
@@ -59,7 +60,7 @@ El esquema lógico de Tarea está en el [modelo de datos](../05-Datos/Modelo-de-
 | `app/lib/tareas.ts` | Reunir el tipo Tarea, los valores de estado y las validaciones compartidas. |
 | `app/lib/semanas.ts` | Calcular los límites semanales y clasificar las finalizaciones usando America/Lima. |
 | `app/lib/client/tareas.ts` | Leer, validar y guardar la colección de tareas en localStorage. Coordinar cambios entre pestañas y comunicar fallos de lectura o escritura. |
-| `tests/` | Incorporar pruebas de reglas críticas, fechas, persistencia, errores y concurrencia con las herramientas que se concreten durante la implementación. Actualmente no hay un comando de pruebas automatizadas de la aplicación definido. |
+| `tests/` | Pruebas de lectura de HU-01 mediante `npm test` y el ejecutor de Node.js. Las pruebas de escrituras, movimientos y concurrencia se incorporarán con esas implementaciones. |
 
 Los componentes pueden contener sus columnas y tarjetas mientras resulte sencillo mantenerlos juntos. Los archivos se dividirán cuando haya una responsabilidad concreta o reutilización que lo justifique.
 

@@ -38,6 +38,7 @@ El tablero no necesita variables de S3 para su almacenamiento local. `.env.examp
 ## Comprobaciones
 
 ```bash
+npm test
 npm run lint
 npm run typecheck
 npm run build
@@ -49,12 +50,21 @@ npm run build
 npm run start
 ```
 
+### Pruebas de lectura de HU-01
+
+`npm test` ejecuta las 20 pruebas de [tests/leer-tareas.test.mjs](tests/leer-tareas.test.mjs) con el ejecutor de Node.js. Requiere las dependencias instaladas con `npm ci`; no necesita levantar la aplicación ni configurar credenciales.
+
+La suite transpila los módulos reales de tareas con el TypeScript instalado a una carpeta temporal del sistema, que elimina al terminar. Llama a `leerTareas()` con un almacenamiento simulado y comprueba datos válidos, vacío, errores, duplicados, fechas, capacidad y conservación de 200 tareas. También detecta operaciones distintas de lectura. No accede a los datos reales del navegador.
+
+Los [casos y resultados esperados](docs/04-Casos%20de%20Uso/HU-01.%20Consultar%20mi%20tablero.md#pruebas-automatizadas-de-lectura) están documentados en HU-01. En navegador se revisó el tablero vacío en escritorio y móvil; siguen pendientes los recorridos con tareas, errores y reintento, recarga y reapertura con datos, títulos largos y etiquetas mostradas como texto, navegación con teclado, la matriz de compatibilidad y el rendimiento en Wi-Fi y 4G. Las pruebas de lectura no verifican esos recorridos visuales ni miden el rendimiento de la interfaz.
+
 ## Estructura
 
 ```text
 app/                    Página del tablero, layout y estilos globales.
   _components/          Consulta del tablero y sus estados de interfaz.
   lib/                  Tipo Tarea, validación y lectura de localStorage.
+tests/                  Pruebas automatizadas de lectura de HU-01.
 docs/
   00-Inicio/            Problema y objetivo del sistema.
   01-Usuarios/          Actor y perfil del usuario.
