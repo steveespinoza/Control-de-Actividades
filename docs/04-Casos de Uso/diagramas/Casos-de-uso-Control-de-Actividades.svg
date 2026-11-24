@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="970" viewBox="0 0 1000 970" role="img" aria-labelledby="title description">
+  <title id="title">Casos de uso — Control de Actividades</title>
+  <desc id="description">Diagrama UML general. El único actor, Usuario, está fuera del límite de Control de Actividades y se asocia con siete casos de uso: HU-01 Consultar mi tablero; HU-02 Registrar un pendiente; HU-03 Actualizar lo que estoy haciendo; HU-04 Limitar mi trabajo en curso; HU-05 Completar una tarea; HU-06 Continuar con mis tareas guardadas; HU-07 Revisar lo que terminé en la semana.</desc>
+  <rect width="1000" height="970" fill="#fff"/>
+  <g fill="none" stroke="#222" stroke-width="2">
+    <rect x="330" y="40" width="620" height="890"/>
+    <circle cx="130" cy="433" r="18"/>
+    <path d="M130 451V522 M94 482H166 M130 522L102 564 M130 522L158 564"/>
+    <line x1="166" y1="482" x2="430" y2="150"/>
+    <line x1="166" y1="482" x2="430" y2="265"/>
+    <line x1="166" y1="482" x2="430" y2="380"/>
+    <line x1="166" y1="482" x2="430" y2="495"/>
+    <line x1="166" y1="482" x2="430" y2="610"/>
+    <line x1="166" y1="482" x2="430" y2="725"/>
+    <line x1="166" y1="482" x2="430" y2="840"/>
+    <ellipse cx="665" cy="150" rx="235" ry="44"/>
+    <ellipse cx="665" cy="265" rx="235" ry="44"/>
+    <ellipse cx="665" cy="380" rx="235" ry="44"/>
+    <ellipse cx="665" cy="495" rx="235" ry="44"/>
+    <ellipse cx="665" cy="610" rx="235" ry="44"/>
+    <ellipse cx="665" cy="725" rx="235" ry="44"/>
+    <ellipse cx="665" cy="840" rx="235" ry="44"/>
+  </g>
+  <g fill="#222" font-family="Arial, Helvetica, sans-serif" font-size="20" text-anchor="middle">
+    <text x="640" y="80" font-size="24" font-weight="bold">Control de Actividades</text>
+    <text x="130" y="600">Usuario</text>
+    <text x="665" y="157">HU-01 · Consultar mi tablero</text>
+    <text x="665" y="272">HU-02 · Registrar un pendiente</text>
+    <text x="665" y="375">HU-03 · Actualizar lo que</text>
+    <text x="665" y="399">estoy haciendo</text>
+    <text x="665" y="490">HU-04 · Limitar mi trabajo</text>
+    <text x="665" y="514">en curso</text>
+    <text x="665" y="617">HU-05 · Completar una tarea</text>
+    <text x="665" y="720">HU-06 · Continuar con mis</text>
+    <text x="665" y="744">tareas guardadas</text>
+    <text x="665" y="835">HU-07 · Revisar lo que terminé</text>
+    <text x="665" y="859">en la semana</text>
+  </g>
+</svg>

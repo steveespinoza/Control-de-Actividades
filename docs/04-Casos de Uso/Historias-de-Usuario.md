@@ -4,19 +4,33 @@ Estas historias describen el uso del MVP desde la perspectiva del [Usuario](../0
 
 Los criterios de aceptación definen comportamientos por implementar y verificar. Su inclusión no significa que las historias estén desarrolladas o aprobadas.
 
+## Diagrama de casos de uso
+
+![Diagrama UML general: el actor Usuario se asocia con los siete casos de uso de Control de Actividades, de HU-01 a HU-07.](diagramas/Casos-de-uso-Control-de-Actividades.svg)
+
+### Explicación del diagrama
+
+El **Usuario** es el único actor y se representa fuera del sistema. El rectángulo delimita **Control de Actividades**. Cada óvalo identifica uno de los siete casos de uso con el código de su historia, y cada línea representa la asociación del Usuario con ese caso.
+
+El usuario consulta su tablero, registra pendientes, actualiza lo que está haciendo, mantiene su trabajo en curso dentro del límite de 10 tareas y completa las tareas terminadas. También puede continuar con sus datos guardados y revisar cuántas tareas completó en la semana.
+
+Las explicaciones y los criterios de aceptación de cada historia se encuentran en los apartados siguientes y en sus documentos enlazados. El diagrama describe el alcance previsto; su inclusión no acredita funcionalidades implementadas ni pruebas realizadas.
+
 ## Resumen
 
 | Historia | Necesidad | Requisito relacionado |
 | --- | --- | --- |
-| HU-01 | Ver mis pendientes en un solo lugar. | RF-01 |
-| HU-02 | Registrar una nueva tarea. | RF-02 |
-| HU-03 | Actualizar el estado de una tarea sin completarla. | RF-03 |
-| HU-04 | Mantener acotado mi trabajo en curso. | RF-04 |
-| HU-05 | Marcar una tarea como completada. | RF-03 y RF-06 |
-| HU-06 | Recuperar mis tareas y cambios guardados. | RF-05 |
-| HU-07 | Reconocer mi avance semanal. | RF-06 |
+| [HU-01](HU-01.%20Consultar%20mi%20tablero.md) | Ver mis pendientes en un solo lugar. | RF-01 |
+| [HU-02](HU-02.%20Registrar%20un%20pendiente.md) | Registrar una nueva tarea. | RF-02 |
+| [HU-03](HU-03.%20Actualizar%20lo%20que%20estoy%20haciendo.md) | Actualizar el estado de una tarea sin completarla. | RF-03 |
+| [HU-04](HU-04.%20Limitar%20mi%20trabajo%20en%20curso.md) | Mantener acotado mi trabajo en curso. | RF-04 |
+| [HU-05](HU-05.%20Completar%20una%20tarea.md) | Marcar una tarea como completada. | RF-03 y RF-06 |
+| [HU-06](HU-06.%20Continuar%20con%20mis%20tareas%20guardadas.md) | Recuperar mis tareas y cambios guardados. | RF-05 |
+| [HU-07](HU-07.%20Revisar%20lo%20que%20termin%C3%A9%20en%20la%20semana.md) | Reconocer mi avance semanal. | RF-06 |
 
 ## HU-01. Consultar mi tablero
+
+La explicación y los criterios detallados están en [HU-01. Consultar mi tablero](HU-01.%20Consultar%20mi%20tablero.md).
 
 **Como usuario, quiero ver mis tareas organizadas por estado al abrir la aplicación, para conocer mis pendientes sin buscar en notas o mensajes separados.**
 
@@ -29,6 +43,8 @@ Los criterios de aceptación definen comportamientos por implementar y verificar
 
 ## HU-02. Registrar un pendiente
 
+La explicación y los criterios detallados están en [HU-02. Registrar un pendiente](HU-02.%20Registrar%20un%20pendiente.md).
+
 **Como usuario, quiero crear una tarea con un título, para registrar lo que necesito hacer antes de olvidarlo.**
 
 **Criterios de aceptación:**
@@ -39,6 +55,8 @@ Los criterios de aceptación definen comportamientos por implementar y verificar
 - Dado que falla el guardado, cuando se comunica el error, entonces no se informa que la tarea se registró y el título permanece en el formulario mientras la página siga abierta.
 
 ## HU-03. Actualizar lo que estoy haciendo
+
+La explicación y los criterios detallados están en [HU-03. Actualizar lo que estoy haciendo](HU-03.%20Actualizar%20lo%20que%20estoy%20haciendo.md).
 
 **Como usuario, quiero mover una tarea entre Pendiente y En curso, para que el tablero refleje lo que estoy atendiendo y lo que todavía debe esperar.**
 
@@ -53,6 +71,8 @@ La entrada a **En curso** también debe cumplir HU-04. La finalización se descr
 
 ## HU-04. Limitar mi trabajo en curso
 
+La explicación y los criterios detallados están en [HU-04. Limitar mi trabajo en curso](HU-04.%20Limitar%20mi%20trabajo%20en%20curso.md).
+
 **Como usuario, quiero que el tablero limite mis tareas en curso a 10, para evitar empezar más pendientes de los que he decidido atender a la vez.**
 
 **Criterios de aceptación:**
@@ -65,6 +85,8 @@ La entrada a **En curso** también debe cumplir HU-04. La finalización se descr
 
 ## HU-05. Completar una tarea
 
+La explicación y los criterios detallados están en [HU-05. Completar una tarea](HU-05.%20Completar%20una%20tarea.md).
+
 **Como usuario, quiero marcar una tarea como completada, para distinguir el trabajo terminado de lo que todavía tengo pendiente.**
 
 **Criterios de aceptación:**
@@ -75,6 +97,8 @@ La entrada a **En curso** también debe cumplir HU-04. La finalización se descr
 - Dado que falla el guardado al completar, cuando termina el intento, entonces no quedan guardados por separado el nuevo estado y su fecha de finalización.
 
 ## HU-06. Continuar con mis tareas guardadas
+
+La explicación y los criterios detallados están en [HU-06. Continuar con mis tareas guardadas](HU-06.%20Continuar%20con%20mis%20tareas%20guardadas.md).
 
 **Como usuario, quiero recuperar mis tareas y sus estados al volver a abrir la aplicación, para continuar organizándome sin anotarlas otra vez.**
 
@@ -89,6 +113,8 @@ La entrada a **En curso** también debe cumplir HU-04. La finalización se descr
 La versión final no sincroniza tareas entre navegadores o dispositivos. La disponibilidad y la recuperación se definirán al implementar localStorage, conforme a los requisitos no funcionales.
 
 ## HU-07. Revisar lo que terminé en la semana
+
+La explicación y los criterios detallados están en [HU-07. Revisar lo que terminé en la semana](HU-07.%20Revisar%20lo%20que%20termin%C3%A9%20en%20la%20semana.md).
 
 **Como usuario, quiero consultar cuántas tareas terminé cada semana, para reconocer mi avance con un resultado visible.**
 
