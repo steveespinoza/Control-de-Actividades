@@ -1,6 +1,6 @@
 # Modelo de datos — Control de Actividades
 
-Este documento define el modelo lógico mínimo para las [historias de usuario](../04-Casos%20de%20Uso/Historias-de-Usuario.md), a partir de los [requisitos funcionales](../02-Requisitos/Requisitos-Funcionales.md). Describe el diseño previsto; todavía no existe un esquema implementado ni migraciones funcionales que lo materialicen.
+Este documento define el modelo lógico mínimo para las [historias de usuario](../04-Casos%20de%20Uso/Historias-de-Usuario.md), a partir de los [requisitos funcionales](../02-Requisitos/Requisitos-Funcionales.md). El diseño utiliza localStorage desde el inicio del desarrollo. HU-01 implementa la lectura y validación; la creación y el guardado de cambios siguen pendientes.
 
 ## Entidad Tarea
 
@@ -13,7 +13,7 @@ Una **Tarea** representa un pendiente personal que puede pasar por los estados d
 | `estado` | Valor enumerado | Sí | Solo admite `pendiente`, `en_curso` o `completada`. Las tareas nuevas se crean con `pendiente`. |
 | `fecha_finalizacion` | Instante con referencia temporal explícita | Solo al completar | Es nula en tareas pendientes o en curso. Al completar, guarda el momento de finalización y permanece inmutable. Se representa en UTC y se interpreta en America/Lima para las fechas y el conteo semanal. |
 
-Los nombres de los atributos y sus tipos son parte de este diseño. Su implementación física en Supabase y su representación en localStorage quedan pendientes.
+Cada tarea se representa como un objeto dentro de un arreglo JSON en localStorage. El identificador UUID, el título y el estado son cadenas; `fecha_finalizacion` es una cadena ISO 8601 en UTC o `null`. La lectura comprueba estos atributos, la unicidad de identificadores y el máximo de 10 tareas en curso, sin corregir ni sobrescribir datos inválidos.
 
 ## Diagrama del modelo
 
@@ -21,7 +21,7 @@ Los nombres de los atributos y sus tipos son parte de este diseño. Su implement
 
 ### Explicación del diagrama
 
-El rectángulo representa la única entidad persistida del modelo: **Tarea**. Cada fila identifica uno de sus atributos. La marca **PK** señala la clave primaria y la columna de nulabilidad indica si el atributo puede carecer de valor.
+El rectángulo representa la única entidad persistida del modelo: **Tarea**. Cada fila identifica uno de sus atributos. La marca **PK** señala el identificador único del modelo lógico y la columna de nulabilidad indica si el atributo puede carecer de valor. En localStorage, la validación de la aplicación deberá garantizar la unicidad del identificador.
 
 El modelo tiene una sola entidad, por lo que no hay relaciones ni claves foráneas. El **Usuario** es el actor del sistema, sin una cuenta almacenada. Las columnas del tablero corresponden al atributo `estado`; el tablero se obtiene agrupando las tareas. La ocupación de En curso y el avance semanal son resultados calculados a partir de esas tareas.
 
@@ -40,11 +40,13 @@ La creación y los movimientos están definidos en RF-02 y RF-03. Una tarea pert
 - Cada tarea tiene un identificador único. Moverla conserva ese identificador y su título, sin generar otra tarea.
 - Una tarea tiene fecha de finalización si y solo si está completada. El nuevo estado y la fecha se guardan juntos, como una sola operación consistente.
 - Repetir la finalización de una tarea ya completada conserva su fecha original y no registra otra finalización.
-- El conjunto de tareas con `estado = en_curso` admite un máximo de **10**. La regla se comprueba al guardar y debe mantenerse ante operaciones desde dos pestañas y, durante el desarrollo, ante solicitudes directas a Supabase.
+- El conjunto de tareas con `estado = en_curso` admite un máximo de **10**. La regla se comprueba al guardar y debe mantenerse ante operaciones desde dos pestañas.
 - Alcanzar el máximo permite seguir creando tareas pendientes y sacar tareas de En curso. Las **200 tareas totales** son el volumen de evaluación de rendimiento, sin constituir un límite de creación.
 - Una escritura fallida se comunica como error y no se confirma como guardada. Los movimientos fallidos no deben perder ni duplicar tareas.
 
-Las restricciones de cada tarea y el límite sobre el conjunto deberán materializarse en el almacenamiento de cada etapa. El mecanismo de coordinación de operaciones concurrentes queda pendiente de implementación y verificación; el diagrama por sí solo no garantiza estas reglas.
+La aplicación deberá validar la colección al leer y guardar: identificadores únicos, títulos no vacíos, estados válidos y correspondencia entre estado completado y fecha de finalización. Los datos inválidos o una lectura fallida deben comunicarse como error, sin presentarlos como una colección vacía.
+
+El límite sobre el conjunto de tareas, el cierre definitivo y la conservación de la fecha ante solicitudes repetidas deberán cumplirse en las operaciones del navegador. La coordinación de operaciones concurrentes y las escrituras en localStorage siguen pendientes de implementación y pruebas.
 
 ## Datos calculados
 
@@ -58,19 +60,31 @@ La semana comienza el **lunes a las 00:00 en America/Lima (Perú)**, incluyendo 
 
 Estos resultados se calculan desde las tareas guardadas; no requieren una entidad Semana ni un contador de finalizaciones persistido.
 
-## Almacenamiento por etapas
+## Persistencia en localStorage
 
-| Etapa | Representación prevista de Tarea | Condiciones |
-| --- | --- | --- |
-| Desarrollo con Supabase | Registro con identificador UUID, título de texto, estado restringido a los tres valores permitidos y fecha de finalización de tipo temporal con zona (`timestamptz`), nula hasta completar. | Los cambios del esquema deberán quedar en migraciones. Solo el autor tiene acceso al sistema, sin incorporar un inicio de sesión a la aplicación. |
-| Versión final con localStorage | Objeto dentro de una colección de tareas: identificador y título como cadenas, estado con los mismos valores y fecha como cadena ISO 8601 en UTC o `null`. | Se guardan todas las tareas, incluidas las completadas. Se recuperan en el mismo navegador y sitio mientras se conserven los datos locales. |
+La clave `control-de-actividades:tareas` contiene un arreglo JSON con todas las tareas, incluidas las completadas. Una clave ausente y un arreglo vacío representan un tablero sin tareas. Un contenido vacío, JSON inválido o una colección inconsistente producen un error de lectura de datos, sin tratarlo como un tablero vacío.
 
-El cambio a localStorage se realiza al terminar el desarrollo y abarca todas las tareas. Las tareas existentes en Supabase no se conservan ni se trasladan a la versión final. Completar una tarea no cambia su almacenamiento.
+Ejemplo del formato de almacenamiento; no se carga automáticamente en la aplicación:
 
-La disponibilidad y la recuperación ante pérdida de datos se definirán al comenzar la implementación de localStorage, conforme a los [requisitos no funcionales](../02-Requisitos/Requisitos-No-Funcionales.md). Esta definición no bloquea la etapa de desarrollo con Supabase.
+```json
+[
+  {
+    "id": "10000000-0000-4000-8000-000000000001",
+    "titulo": "Preparar la revisión semanal",
+    "estado": "pendiente",
+    "fecha_finalizacion": null
+  }
+]
+```
+
+La consulta no escribe ni inicializa la clave. El guardado y los movimientos futuros conservarán este modelo; el avance semanal se calculará desde las fechas guardadas.
+
+Los datos quedan asociados al mismo sitio y navegador. La recarga y la reapertura recuperan la información mientras se conserven sus datos locales, sin sincronización entre navegadores o dispositivos.
+
+**No habrá respaldos ni restauración.** Si se borran los datos del sitio o del navegador, las tareas se pierden para la aplicación. Los errores de lectura y escritura mantienen las reglas de integridad de los [requisitos no funcionales](../02-Requisitos/Requisitos-No-Funcionales.md).
 
 ## Límites y estado
 
 El modelo respeta el [alcance del MVP](../03-Alcance/Alcance-MVP.md) y sus [exclusiones](../03-Alcance/Fuera-de-Alcance.md). El acceso personal sin cuentas y la ausencia de adjuntos, subtareas y colaboración mantienen el modelo centrado en Tarea.
 
-**Estado:** modelo documentado, pendiente de implementación y verificación. No se han creado tablas, aplicado migraciones ni ejecutado pruebas de datos como parte de este documento.
+**Estado:** tipo Tarea, validación y lectura implementados en HU-01. El guardado, los movimientos y su coordinación entre pestañas siguen pendientes; la verificación de consulta se detalla en [HU-01](../04-Casos%20de%20Uso/HU-01.%20Consultar%20mi%20tablero.md#verificación-de-esta-entrega).

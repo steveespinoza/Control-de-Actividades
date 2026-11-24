@@ -63,14 +63,14 @@ Las 200 tareas constituyen el volumen de referencia de rendimiento; el límite f
 
 **Criterios de verificación:**
 
-- Durante el desarrollo, la persistencia debe utilizar la base de datos de **Supabase**. Al terminar el desarrollo, todas las tareas deben guardarse en **localStorage**, independientemente de su estado. Los criterios de integridad y recuperación de cambios guardados deben verificarse con el almacenamiento de cada etapa.
-- Las tareas guardadas en Supabase durante el desarrollo no deben conservarse ni trasladarse a localStorage al cambiar de etapa. No se incluye una migración de esos datos.
-- Las reglas de estado y capacidad de RF-03 y RF-04 deben cumplirse al guardar los datos, también ante movimientos desde dos pestañas. Durante la fase con Supabase, deben verificarse además las solicitudes directas a la base de datos. Ocultar controles no basta para garantizar su cumplimiento.
-- En la versión final, las tareas guardadas deben recuperarse al recargar o volver a abrir la aplicación en el mismo navegador y sitio, siempre que sus datos locales se conserven. No se exige compartir el tablero entre navegadores o dispositivos.
-- Si localStorage no está disponible o rechaza una escritura, debe comunicarse el fallo sin informar que el cambio se guardó. El almacenamiento local no sustituye una política de respaldo y restauración.
+- Todas las tareas deben guardarse en **localStorage desde el inicio del desarrollo**, independientemente de su estado.
+- Las reglas de estado y capacidad de RF-03 y RF-04 deben cumplirse al guardar los datos, también ante movimientos desde dos pestañas.
+- Las tareas guardadas deben recuperarse al recargar o volver a abrir la aplicación en el mismo navegador y sitio, siempre que sus datos locales se conserven. No se exige compartir el tablero entre navegadores o dispositivos.
+- Si localStorage no está disponible o rechaza una escritura, debe comunicarse el fallo sin informar que el cambio se guardó.
+- No se implementan respaldos ni restauración. Si se borran los datos del sitio o del navegador, la aplicación no recupera las tareas desde otra copia.
 - Un fallo al cambiar de columna debe dejar la tarea en un estado válido, sin duplicarla ni perderla.
 - Completar una tarea y registrar su fecha de finalización debe ser una sola operación consistente. Repetir la solicitud no debe cambiar esa fecha ni aumentar el conteo semanal.
-- Un error de conexión debe comunicarse sin presentar información que no pudo cargarse como si el tablero estuviera vacío.
+- Un error de lectura debe comunicarse sin presentar información que no pudo cargarse como si el tablero estuviera vacío.
 - Si falla la creación, el título introducido debe conservarse en el formulario mientras la página siga abierta, para que el usuario pueda corregir o repetir el intento.
 - Estas condiciones deben verificarse con fallos de guardado y operaciones concurrentes controladas; una compilación correcta no las demuestra.
 
@@ -91,11 +91,11 @@ Las 200 tareas constituyen el volumen de referencia de rendimiento; el límite f
 
 **Criterios de verificación:**
 
-- Las credenciales administrativas de Supabase, las claves privadas de AWS y otros secretos no deben aparecer en el código enviado al navegador, las respuestas ni los mensajes de error.
+- Las claves privadas de AWS y otros secretos no deben aparecer en el código enviado al navegador, las respuestas ni los mensajes de error.
 - Los datos introducidos deben validarse al guardar. Un título con etiquetas o código debe tratarse como texto, sin ejecutarlo en la interfaz.
 - Si la aplicación se publica en internet, sus comunicaciones deben utilizar HTTPS.
-- Durante la fase con Supabase, la configuración de acceso a los datos debe permitir únicamente las operaciones previstas para el tablero; no debe conceder administración de la base de datos al navegador.
-- Durante el desarrollo, el autor es la única persona con acceso al sistema, sin incorporar un inicio de sesión a la aplicación. En la versión final, los datos se guardan localmente en el navegador y sitio utilizados, sin sincronización con Supabase.
+- Las credenciales de los servicios conservados no son necesarias para la persistencia local del tablero ni deben enviarse al navegador.
+- Durante el desarrollo, el autor es la única persona con acceso al sistema, sin incorporar un inicio de sesión a la aplicación. Los datos se guardan localmente en el navegador y sitio utilizados.
 
 ## RNF-08. Mantenibilidad y reproducibilidad
 
@@ -106,12 +106,12 @@ Las 200 tareas constituyen el volumen de referencia de rendimiento; el límite f
 - Deben conservarse las tecnologías y la configuración descritas en el README. Un requisito de calidad no autoriza incorporar nuevas dependencias o servicios.
 - El código debe mantener TypeScript estricto y permitir ejecutar correctamente `npm run lint`, `npm run typecheck` y `npm run build`.
 - La documentación debe indicar cómo preparar el entorno y qué variables necesita la implementación, utilizando ejemplos sin secretos.
-- Mientras se utilice Supabase, los cambios de su modelo de datos deben quedar en migraciones que permitan reproducir el esquema.
+- La estructura y validación de los datos de localStorage deben corresponder al modelo de datos documentado.
 - Las verificaciones deben cubrir las reglas críticas: límite de 10 tareas, imposibilidad de reabrir tareas completadas, persistencia y límites semanales en Lima.
 - Los resultados deben distinguir comprobaciones de código, pruebas con datos y verificaciones del entorno desplegado.
 
-## Definición diferida: disponibilidad y recuperación
+## Conservación y pérdida de datos
 
-El entorno de uso, la tolerancia a interrupciones y las necesidades de respaldo y restauración se definirán al comenzar la implementación de **localStorage**. Esta definición no bloquea el desarrollo con Supabase.
+La aplicación utiliza localStorage en el mismo navegador y sitio desde el inicio del desarrollo. No implementa respaldos ni restauración: borrar los datos locales implica perder las tareas para la aplicación, sin recuperación desde otra copia.
 
-Hasta esa etapa no se fija un porcentaje de disponibilidad ni una política de recuperación. Los criterios de guardado, manejo de errores e integridad ya definidos se mantienen vigentes; conservar Supabase, S3 o Vercel como tecnologías previstas no sustituye la definición posterior de esa política.
+La recarga y la reapertura deben recuperar los datos mientras estos se conserven. Los errores de lectura, guardado y operaciones simultáneas mantienen los criterios de integridad anteriores. Esta decisión no establece un porcentaje de disponibilidad del sitio ni incorpora un modo sin conexión completo.

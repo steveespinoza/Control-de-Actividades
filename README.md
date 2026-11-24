@@ -1,16 +1,16 @@
 # Control de Actividades
 
-Estoy preparando un tablero personal para organizar tareas en Pendiente, En curso y Completadas. El comportamiento previsto está descrito en los [requisitos funcionales](docs/02-Requisitos/Requisitos-Funcionales.md); la aplicación todavía muestra una página inicial y las funciones del tablero están pendientes de implementación.
+Estoy preparando un tablero personal para organizar tareas en Pendiente, En curso y Completadas. La consulta de HU-01 ya muestra las tareas guardadas en localStorage, con estados de carga, vacío y error. Crear y mover tareas y consultar el avance semanal siguen pendientes, según los [requisitos funcionales](docs/02-Requisitos/Requisitos-Funcionales.md).
 
 ## Tecnologías
 
 - Next.js 16 y React 19.
 - TypeScript estricto y Tailwind CSS 4.
-- ESLint y CLI de Supabase.
-- Supabase para guardar las tareas durante el desarrollo; localStorage para todas las tareas de la versión final, sin inicio de sesión ni sincronización entre dispositivos.
+- ESLint.
+- localStorage para todas las tareas desde el inicio del desarrollo, sin inicio de sesión ni sincronización entre dispositivos.
 - Amazon S3 privado para archivos y Vercel como destino previsto de despliegue.
 
-Las dependencias y sus versiones se conservan en `package.json` y `package-lock.json`. Los clientes de Supabase y S3 todavía no están integrados en la aplicación.
+Las dependencias y sus versiones se conservan en `package.json` y `package-lock.json`. La configuración de S3 se mantiene, sin integrarse en la persistencia del tablero.
 
 ## Desarrollo local
 
@@ -21,27 +21,19 @@ npm ci
 npm run dev
 ```
 
-Abre [http://localhost:3000](http://localhost:3000). La página inicial funciona sin credenciales ni servicios externos.
+Abre [http://localhost:3000](http://localhost:3000). El tablero funciona sin credenciales ni servicios externos. En un navegador sin tareas guardadas muestra las tres columnas vacías; la creación llegará con HU-02.
 
-## Variables de entorno
+## Persistencia local y conservación de datos
 
-`.env.example` conserva las variables previstas para Supabase y S3. Para configurar esos servicios, copia el archivo a `.env.local` y completa los valores del entorno elegido.
+El tablero consulta **localStorage desde el inicio del desarrollo**. Lee un arreglo JSON de tareas en la clave `control-de-actividades:tareas`, según el [modelo de datos](docs/05-Datos/Modelo-de-Datos.md#persistencia-en-localstorage). HU-01 solo lee y valida: no crea, modifica ni elimina datos. La escritura sigue pendiente.
 
-En PowerShell:
+**No habrá respaldos ni restauración.** Si se borran los datos del sitio o del navegador, las tareas se pierden para la aplicación. La recarga y la reapertura conservarán lo guardado mientras esos datos locales se mantengan. No hay sincronización entre navegadores o dispositivos.
 
-```powershell
-Copy-Item .env.example .env.local
-```
+Los errores al leer o guardar deben comunicarse. La ausencia de respaldos no elimina las reglas de integridad, el máximo de 10 tareas en curso ni el cierre definitivo de las completadas.
 
-En macOS o Linux:
+## Configuración conservada de servicios
 
-```bash
-cp .env.example .env.local
-```
-
-Las claves administrativas y de AWS deben mantenerse en el servidor. Los archivos privados de entorno están excluidos de Git.
-
-La configuración local de Supabase se conserva en `supabase/config.toml`. El repositorio no tiene una vinculación local a un proyecto remoto ni migraciones funcionales pendientes.
+El tablero no necesita variables de S3 para su almacenamiento local. `.env.example` conserva los nombres de las variables de ese servicio como referencia. Las credenciales privadas permanecen en archivos de entorno excluidos de Git.
 
 ## Comprobaciones
 
@@ -60,7 +52,9 @@ npm run start
 ## Estructura
 
 ```text
-app/                    Página inicial, layout y estilos globales.
+app/                    Página del tablero, layout y estilos globales.
+  _components/          Consulta del tablero y sus estados de interfaz.
+  lib/                  Tipo Tarea, validación y lectura de localStorage.
 docs/
   00-Inicio/            Problema y objetivo del sistema.
   01-Usuarios/          Actor y perfil del usuario.
@@ -70,7 +64,6 @@ docs/
   05-Datos/             Modelo lógico de datos y diagrama de la entidad Tarea.
   06-Arquitectura/      Arquitectura, estructura prevista y flujos de las tareas.
   07-Interfaz/          Prototipos de las vistas de escritorio y móvil.
-supabase/config.toml    Configuración local de Supabase.
 ```
 
 ## Documentación

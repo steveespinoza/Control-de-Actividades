@@ -1,12 +1,56 @@
 @import "tailwindcss";
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
+  --app-bg: #100d0a;
+  --sidebar-bg: #14100d;
+  --surface: #1c1611;
+  --border: #3b2d22;
+  --text: #f7f2ec;
+  --text-muted: #b6a89b;
+  --primary: #f97316;
+  --primary-hover: #fb923c;
+  --primary-active: #ea580c;
+  --on-primary: #1c1007;
+  --primary-soft: #332014;
+  --primary-text: #fdba74;
+  --focus: #fdba74;
+  --error-border: #b65e50;
+  --error-text: #fca5a5;
 }
 
 body {
   margin: 0;
-  background: #f8fafc;
-  color: #0f172a;
+  background: var(--app-bg);
+  color: var(--text);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+button, a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 4px;
+}
+
+.skip-link {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 10;
+  transform: translateY(-200%);
+  border-radius: 8px;
+  padding: 12px 16px;
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
 }
