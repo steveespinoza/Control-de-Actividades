@@ -67,6 +67,9 @@ docs/
   02-Requisitos/        Requisitos funcionales y no funcionales.
   03-Alcance/           Funciones incluidas y límites de la primera entrega.
   04-Casos de Uso/      Historias de usuario y criterios de aceptación.
+  05-Datos/             Modelo lógico de datos y diagrama de la entidad Tarea.
+  06-Arquitectura/      Arquitectura, estructura prevista y flujos de las tareas.
+  07-Interfaz/          Prototipos de las vistas de escritorio y móvil.
 supabase/config.toml    Configuración local de Supabase.
 ```
 
@@ -79,3 +82,8 @@ supabase/config.toml    Configuración local de Supabase.
 - [Alcance del MVP](docs/03-Alcance/Alcance-MVP.md).
 - [Fuera de alcance](docs/03-Alcance/Fuera-de-Alcance.md).
 - [Historias de usuario](docs/04-Casos%20de%20Uso/Historias-de-Usuario.md).
+- [Modelo de datos](docs/05-Datos/Modelo-de-Datos.md).
+- [Arquitectura general](docs/06-Arquitectura/Arquitectura-General.md).
+- [Estructura del proyecto](docs/06-Arquitectura/Estructura-del-Proyecto.md).
+- [Flujos de una tarea](docs/06-Arquitectura/Flujos.md).
+- [Pantallas y prototipos](docs/07-Interfaz/Pantallas.md).

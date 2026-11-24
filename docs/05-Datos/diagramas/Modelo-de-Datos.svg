@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="510" viewBox="0 0 920 510" role="img" aria-labelledby="title description">
+  <title id="title">Modelo lógico — Control de Actividades</title>
+  <desc id="description">Una sola entidad Tarea, sin relaciones. Atributos: id de tipo UUID, clave primaria y obligatorio; titulo de texto obligatorio; estado enumerado obligatorio; fecha_finalizacion de tipo instante UTC, nula mientras la tarea no esté completada.</desc>
+  <rect width="920" height="510" fill="#fff"/>
+  <rect x="60" y="90" width="800" height="50" fill="#e8edf2"/>
+  <rect x="60" y="140" width="800" height="54" fill="#f5f7f9"/>
+  <g fill="none" stroke="#334155" stroke-width="1.5">
+    <rect x="60" y="90" width="800" height="320"/>
+    <path d="M60 140H860 M60 194H860 M60 248H860 M60 302H860 M60 356H860 M345 140V410 M660 140V410"/>
+  </g>
+  <g fill="#17212e" font-family="Arial, Helvetica, sans-serif">
+    <text x="460" y="48" text-anchor="middle" font-size="24" font-weight="bold">Modelo lógico · Control de Actividades</text>
+    <text x="460" y="123" text-anchor="middle" font-size="21" font-weight="bold">TAREA</text>
+    <g font-size="17" font-weight="bold">
+      <text x="80" y="174">Atributo</text>
+      <text x="365" y="174">Tipo lógico</text>
+      <text x="680" y="174">Admite nulo</text>
+    </g>
+    <g font-family="Consolas, monospace" font-size="18">
+      <text x="80" y="228">id (PK)</text>
+      <text x="80" y="282">titulo</text>
+      <text x="80" y="336">estado</text>
+      <text x="80" y="390">fecha_finalizacion</text>
+    </g>
+    <g font-size="18">
+      <text x="365" y="228">UUID</text>
+      <text x="365" y="282">Texto</text>
+      <text x="365" y="336">Enumerado</text>
+      <text x="365" y="390">Instante (UTC)</text>
+      <text x="680" y="228">No</text>
+      <text x="680" y="282">No</text>
+      <text x="680" y="336">No</text>
+      <text x="680" y="390">Sí, según estado</text>
+    </g>
+    <g font-size="16">
+      <text x="60" y="451">PK: clave primaria. La fecha es nula mientras la tarea no esté completada.</text>
+      <text x="60" y="480">Valores de estado: pendiente, en_curso, completada.</text>
+    </g>
+  </g>
+</svg>
