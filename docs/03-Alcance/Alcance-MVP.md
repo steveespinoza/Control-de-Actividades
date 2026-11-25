@@ -43,18 +43,33 @@ Las funciones y condiciones excluidas se detallan en [Fuera de alcance](Fuera-de
 
 ## Criterios para considerar terminada la entrega
 
-La aprobación final requiere completar los puntos siguientes. La evidencia disponible y sus límites se detallan en las historias; esta lista no declara verificada la entrega completa:
+La aprobación integral requiere completar los puntos siguientes. Las marcas reflejan los resultados comprobados en los entornos documentados; no extienden esa evidencia a todos los navegadores y dispositivos. El cierre del desarrollo funcional se registra por separado más abajo.
 
-- [ ] Se puede abrir el tablero, crear tareas, moverlas dentro de las reglas y consultar el avance semanal, conforme a RF-01 a RF-06.
-- [ ] El máximo de 10 tareas en curso y la prohibición de reapertura se mantienen también ante operaciones desde dos pestañas; los reintentos no duplican tareas ni finalizaciones.
-- [ ] La aplicación recupera sus datos desde localStorage al recargar y volver a abrir en el mismo navegador y sitio, mientras se mantengan sus datos locales.
-- [ ] El conteo semanal utiliza Lima y clasifica correctamente las finalizaciones a ambos lados del lunes a las 00:00.
+- [x] Se puede abrir el tablero, crear tareas, moverlas dentro de las reglas y consultar el avance semanal, conforme a RF-01 a RF-06.
+- [x] El máximo de 10 tareas en curso y la prohibición de reapertura se mantienen también ante operaciones desde dos pestañas; los reintentos no duplican tareas ni finalizaciones.
+- [x] La aplicación recupera sus datos desde localStorage al recargar y volver a abrir en el mismo navegador y sitio, mientras se mantengan sus datos locales.
+- [x] El conteo semanal utiliza Lima y clasifica correctamente las finalizaciones a ambos lados del lunes a las 00:00.
 - [ ] La carga del tablero, la creación, los cambios de columna y la consulta semanal cumplen el máximo de **3 segundos**, con el volumen de **200 tareas** y las condiciones de **Wi-Fi o 4G** de RNF-04.
 - [ ] Se verifica el uso en computadoras y dispositivos móviles, con teclado, ratón e interacción táctil según corresponda. Se documenta la matriz de pruebas respecto al objetivo de las **tres últimas versiones estables de todos los navegadores**; las combinaciones no probadas quedan identificadas.
 - [ ] Se revisan los demás criterios de calidad de RNF-01 a RNF-08 y se registran los resultados, las limitaciones y los pendientes que afecten a la entrega.
-- [ ] `npm run lint`, `npm run typecheck` y `npm run build` terminan correctamente. Estas comprobaciones complementan las pruebas de uso y de datos.
-- [ ] La documentación permite preparar y ejecutar el proyecto y describe localStorage como almacenamiento desde el inicio.
-- [ ] La documentación indica que no hay respaldos ni restauración si se borran los datos del navegador.
+- [x] `npm run lint`, `npm run typecheck` y `npm run build` terminan correctamente. Estas comprobaciones complementan las pruebas de uso y de datos.
+- [x] La documentación permite preparar y ejecutar el proyecto y describe localStorage como almacenamiento desde el inicio.
+- [x] La documentación indica que no hay respaldos ni restauración si se borran los datos del navegador.
+
+## Cierre funcional
+
+El **25 de noviembre de 2026** cierro el desarrollo funcional del MVP con RF-01 a RF-06 implementados: tablero, registro, movimientos, máximo de diez tareas en curso, cierre definitivo, persistencia local y avance semanal en su propia vista. La versión conserva el alcance personal, sin cuentas, sincronización, respaldos ni restauración.
+
+La evidencia comprende **96 pruebas automatizadas aprobadas**, lint, tipos y compilación, además de los recorridos locales de datos, concurrencia y uso descritos en las historias. La [revisión actual de contraste y accesibilidad](../07-Interfaz/Pantallas.md#contraste-y-accesibilidad-actual) registra las mediciones de la paleta, las correcciones de foco y los recorridos en 1280, 390 y 320 px, incluidos errores controlados y listas de 200 tareas.
+
+La aceptación integral de calidad continúa pendiente de:
+
+- Medir el máximo de 3 segundos con 200 tareas en las condiciones reales de Wi-Fi y 4G de RNF-04.
+- Completar la matriz de versiones y sistemas, con dispositivos móviles e interacción táctil real.
+- Validar el uso con los pendientes personales del usuario, conforme a RNF-01.
+- Realizar las comprobaciones manuales pendientes de lector de pantalla hablado, zoom real y alto contraste del sistema.
+
+Estos puntos permanecen identificados como no verificados. El cierre funcional no acredita despliegue, certificación WCAG ni cumplimiento de todas las condiciones de aceptación del MVP.
 
 ## Conservación y pérdida de datos
 
@@ -64,6 +79,6 @@ Se mantienen las obligaciones de informar errores de lectura o escritura y de pr
 
 ## Estado actual
 
-El repositorio contiene la consulta de HU-01, el registro de HU-02, los movimientos entre Pendiente y En curso de HU-03 y la finalización de HU-05. Los cambios se muestran después del guardado y comparten un bloqueo entre pestañas; los ingresos a En curso respetan el máximo de diez y el cierre guarda estado y fecha juntos. HU-07 incorpora el avance semanal con intervalo, conteo y navegación entre semanas. Las verificaciones y sus límites están en [HU-01](../04-Casos%20de%20Uso/HU-01.%20Consultar%20mi%20tablero.md#verificación-de-esta-entrega), [HU-02](../04-Casos%20de%20Uso/HU-02.%20Registrar%20un%20pendiente.md#verificación-en-navegador-y-pendientes), [HU-03](../04-Casos%20de%20Uso/HU-03.%20Actualizar%20lo%20que%20estoy%20haciendo.md#verificación-en-navegador-y-pendientes) y [HU-05](../04-Casos%20de%20Uso/HU-05.%20Completar%20una%20tarea.md#verificación-en-navegador-y-pendientes); la aprobación del MVP sigue pendiente.
+El desarrollo funcional está cerrado según el registro anterior. El repositorio contiene la consulta de HU-01, el registro de HU-02, los movimientos entre Pendiente y En curso de HU-03 y la finalización de HU-05. Los cambios se muestran después del guardado y comparten un bloqueo entre pestañas; los ingresos a En curso respetan el máximo de diez y el cierre guarda estado y fecha juntos. HU-07 incorpora el avance semanal con intervalo, conteo y navegación entre semanas. Las verificaciones y sus límites están en [HU-01](../04-Casos%20de%20Uso/HU-01.%20Consultar%20mi%20tablero.md#verificación-de-esta-entrega), [HU-02](../04-Casos%20de%20Uso/HU-02.%20Registrar%20un%20pendiente.md#verificación-en-navegador-y-pendientes), [HU-03](../04-Casos%20de%20Uso/HU-03.%20Actualizar%20lo%20que%20estoy%20haciendo.md#verificación-en-navegador-y-pendientes) y [HU-05](../04-Casos%20de%20Uso/HU-05.%20Completar%20una%20tarea.md#verificación-en-navegador-y-pendientes); la aceptación integral de calidad sigue pendiente.
 
 La [revisión por criterio de HU-04](../04-Casos%20de%20Uso/HU-04.%20Limitar%20mi%20trabajo%20en%20curso.md#revisión-por-criterio-de-aceptación) identifica la cobertura del límite. Con HU-05 se comprobó la salida a Completadas y la creación con En curso lleno. La contención real de dos ingresos desde nueve en curso ya se comprobó; el método y los resultados están en la verificación de HU-04. La aprobación del MVP sigue pendiente por los requisitos transversales de calidad.

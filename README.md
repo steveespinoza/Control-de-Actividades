@@ -1,6 +1,8 @@
 # Control de Actividades
 
-Estoy preparando un tablero personal para organizar tareas en Pendiente, En curso y Completadas. Permite consultar las tareas guardadas, registrar pendientes, moverlos y completarlos en localStorage. El panel de avance semanal muestra cuántas tareas se terminaron en cada semana, según los [requisitos funcionales](docs/02-Requisitos/Requisitos-Funcionales.md). La verificación completa de calidad sigue pendiente.
+El desarrollo funcional del MVP está cerrado. El tablero permite organizar tareas en Pendiente, En curso y Completadas, registrar pendientes, moverlos y completarlos en localStorage. La vista de avance semanal muestra cuántas tareas se terminaron en cada semana, según los [requisitos funcionales](docs/02-Requisitos/Requisitos-Funcionales.md).
+
+El [cierre funcional del 25 de noviembre de 2026](docs/03-Alcance/Alcance-MVP.md#cierre-funcional) registra la implementación y las comprobaciones realizadas. La aceptación integral de calidad mantiene pendientes las mediciones de rendimiento con Wi-Fi y 4G, la matriz completa de navegadores y dispositivos y las verificaciones manuales indicadas en la documentación.
 
 ## Tecnologías
 
@@ -75,6 +77,8 @@ Las pruebas de espera comprueban cancelación, ausencia de escrituras tardías y
 Los casos y resultados esperados están en [HU-01](docs/04-Casos%20de%20Uso/HU-01.%20Consultar%20mi%20tablero.md#pruebas-automatizadas-de-lectura) y [HU-02](docs/04-Casos%20de%20Uso/HU-02.%20Registrar%20un%20pendiente.md#pruebas-automatizadas-de-registro). En navegador se comprobó el registro en escritorio y móvil, la validación, la cancelación, el foco, la recarga, los títulos largos y el reintento con título conservado después de agotar la espera. La revisión posterior de HU-06 comprobó acceso denegado, lectura y escritura rechazadas, conservación del título y doble clic y Enter repetidos, con una sola escritura por operación confirmada. Los fallos se inyectaron en un origen local de prueba. Quedan pendientes tecnologías de asistencia, la matriz completa de navegadores y el rendimiento con Wi-Fi y 4G.
 
 La [revisión de teclado y compatibilidad](docs/07-Interfaz/Pantallas.md#revisión-de-teclado-y-compatibilidad) registra los recorridos del navegador integrado y Chrome nativo, la cobertura parcial de Edge y las combinaciones pendientes. Incluye la corrección del foco al reintentar el avance semanal y regiones de estado persistentes. La validación hablada con lector de pantalla y la matriz completa siguen pendientes.
+
+La [revisión actual de contraste y accesibilidad](docs/07-Interfaz/Pantallas.md#contraste-y-accesibilidad-actual) documenta colores, relaciones y recorridos de las dos vistas, con un mínimo de texto normal de 4,55:1 en las combinaciones medidas. Corregí el borde y el foco del campo, la salida del menú con Tab, el foco tras recuperar la carga y el recorte del contorno de las tarjetas. Los cambios de color de los botones y las esperas conservan el contraste sin atenuar el texto. La revisión se limita al entorno registrado y mantiene identificadas las comprobaciones manuales pendientes.
 
 ## Estructura
 

@@ -113,9 +113,7 @@
     font-weight: 700;
     transition:
       transform 160ms ease,
-      background-color 160ms ease,
       border-color 160ms ease,
-      color 160ms ease,
       box-shadow 160ms ease;
   }
 
@@ -142,7 +140,8 @@
     border-color: var(--color-brand-primary);
     background: #ffffff;
     box-shadow: 0 0 0 3px var(--color-brand-light);
-    outline: none;
+    outline: 2px solid var(--color-brand-primary);
+    outline-offset: 2px;
   }
 
   :focus-visible {
@@ -169,7 +168,7 @@
   min-height: 100dvh;
   background: var(--background);
   padding: 1.5rem 1rem 2.5rem;
-  animation: fade-in 320ms ease-out;
+  animation: page-enter 320ms ease-out;
 }
 
 .erp-card {
@@ -268,29 +267,13 @@
   transform: translateY(0);
 }
 
-@keyframes fade-in {
+@keyframes page-enter {
   from {
-    opacity: 0;
     transform: translateY(8px);
   }
   to {
-    opacity: 1;
     transform: translateY(0);
   }
-}
-
-@keyframes status-pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.6;
-  }
-}
-
-[aria-busy="true"] {
-  animation: status-pulse 1.5s ease-in-out infinite;
 }
 
 @media (min-width: 640px) {

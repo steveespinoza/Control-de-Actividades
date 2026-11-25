@@ -89,7 +89,7 @@ export default function FormularioTarea({
         aria-invalid={error === mensajes.titulo}
         aria-describedby={`ayuda-titulo${error ? " error-tarea" : ""}`}
         placeholder="Ej. Revisar presupuesto del trimestre"
-        className="min-h-12 w-full border border-slate-300 px-3 py-2.5 text-base placeholder:text-slate-500 aria-[invalid=true]:border-red-600 read-only:bg-slate-100"
+        className="min-h-12 w-full border border-slate-500 px-3 py-2.5 text-base placeholder:text-slate-500 aria-[invalid=true]:border-red-600 read-only:bg-slate-100"
       />
       <p id="ayuda-titulo" className="mt-1.5 text-xs text-slate-600">
         Se guardará automáticamente en Pendiente.
