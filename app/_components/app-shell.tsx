@@ -77,6 +77,7 @@ export default function AppShell({
         <button
           type="button"
           aria-label="Cerrar menú de navegación"
+          tabIndex={-1}
           onClick={cerrarMenu}
           className="sidebar-backdrop fixed inset-0 z-40 bg-black/50 lg:hidden"
         />
@@ -84,6 +85,16 @@ export default function AppShell({
 
       <aside
         id="app-sidebar"
+        onBlur={(evento) => {
+          const destino = evento.relatedTarget;
+          if (
+            destino &&
+            !evento.currentTarget.contains(destino) &&
+            !destino.classList.contains("sidebar-backdrop")
+          ) {
+            setMobileOpen(false);
+          }
+        }}
         className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r-2 border-slate-200 bg-background shadow-lg transition-transform duration-200 lg:visible lg:w-64 lg:translate-x-0 lg:shadow-none ${
           mobileOpen ? "visible translate-x-0" : "invisible -translate-x-full"
         }`}

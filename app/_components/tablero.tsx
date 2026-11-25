@@ -53,6 +53,7 @@ export default function Tablero() {
   const [registroConfirmado, setRegistroConfirmado] = useState(false);
   const [columnaMovil, setColumnaMovil] = useState<EstadoTarea>("pendiente");
   const botonNuevaTarea = useRef<HTMLButtonElement>(null);
+  const enfocarTrasReintento = useRef(false);
   const devolverFoco = useRef(false);
   const [movimientoActual, setMovimientoActual] = useState<{ id: string; destino: EstadoTarea } | null>(null);
   const idMoviendo = movimientoActual?.id ?? null;
@@ -107,6 +108,13 @@ export default function Tablero() {
       devolverFoco.current = false;
     }
   }, [formularioVisible]);
+
+  useEffect(() => {
+    if (consulta.estado === "lista" && enfocarTrasReintento.current) {
+      botonNuevaTarea.current?.focus();
+      enfocarTrasReintento.current = false;
+    }
+  }, [consulta]);
 
   useEffect(() => {
     let activo = true;
@@ -207,7 +215,10 @@ export default function Tablero() {
           </p>
           <button
             type="button"
-            onClick={() => setConsulta(leerTareas())}
+            onClick={() => {
+              enfocarTrasReintento.current = true;
+              setConsulta(leerTareas());
+            }}
             className="mt-5 min-h-11 bg-neutral-950 px-4 py-2.5 text-sm font-bold text-white hover:bg-black"
           >
             Volver a intentar
@@ -374,7 +385,7 @@ export default function Tablero() {
                   <ul
                     tabIndex={0}
                     aria-label={`Tareas en ${columna.titulo}`}
-                    className="space-y-3 overflow-y-auto overscroll-contain p-0.5 md:max-h-[calc(100dvh-18rem)]"
+                    className="space-y-3 overflow-y-auto overscroll-contain p-1 md:max-h-[calc(100dvh-18rem)]"
                   >
                     {tareasColumna.map((tarea) => (
                       <li
