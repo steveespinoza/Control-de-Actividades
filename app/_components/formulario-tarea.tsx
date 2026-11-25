@@ -52,13 +52,13 @@ export default function FormularioTarea({ onGuardada, onCancelar }: {
     <form id="formulario-tarea" aria-labelledby="titulo-formulario" aria-busy={guardando} onSubmit={guardar} noValidate className="mb-6 rounded-xl border border-(--border) bg-(--surface) p-5 sm:p-6">
       <h2 id="titulo-formulario" className="mb-5 text-lg font-semibold">Nueva tarea</h2>
       <label htmlFor="titulo-tarea" className="mb-2 block text-sm font-semibold">Título de la tarea <span className="font-normal text-(--text-muted)">(obligatorio)</span></label>
-      <input ref={campoTitulo} id="titulo-tarea" name="titulo" type="text" required value={titulo} onChange={(evento) => setTitulo(evento.target.value)} readOnly={guardando} aria-invalid={error === mensajes.titulo} aria-describedby={`ayuda-titulo${error ? " error-tarea" : ""}`} className="min-h-12 w-full rounded-lg border border-(--input-border) bg-(--app-bg) px-3 py-3 text-base read-only:opacity-70" />
+      <input ref={campoTitulo} id="titulo-tarea" name="titulo" type="text" required value={titulo} onChange={(evento) => setTitulo(evento.target.value)} readOnly={guardando} aria-invalid={error === mensajes.titulo} aria-describedby={`ayuda-titulo${error ? " error-tarea" : ""}`} className="min-h-12 w-full rounded-lg border border-(--input-border) bg-(--surface) px-3 py-3 text-base aria-[invalid=true]:border-(--error-border) read-only:bg-(--surface-hover)" />
       <p id="ayuda-titulo" className="mt-2 text-sm leading-6 text-(--text-muted)">Se guardará en Pendiente.</p>
-      {error && <p id="error-tarea" role="alert" className="mt-3 text-sm leading-6 text-(--error-text)">{error}</p>}
+      {error && <p id="error-tarea" role="alert" className="mt-3 rounded-lg border border-(--error-border) bg-(--error-bg) p-3 text-sm leading-6 text-(--error-text)">{error}</p>}
       {guardando && <p role="status" className="mt-3 text-sm text-(--text-muted)">Guardando tarea…</p>}
       <div className="mt-5 flex flex-wrap gap-3">
-        <button type="submit" disabled={guardando} className="min-h-11 rounded-lg bg-(--primary) px-4 py-3 text-sm font-semibold text-(--on-primary) hover:bg-(--primary-hover) active:bg-(--primary-active) disabled:cursor-wait disabled:opacity-60">{guardando ? "Guardando…" : "Guardar tarea"}</button>
-        <button type="button" onClick={onCancelar} disabled={guardando} className="min-h-11 rounded-lg border border-(--input-border) px-4 py-3 text-sm font-semibold hover:bg-(--surface-hover) disabled:cursor-wait disabled:opacity-60">Cancelar</button>
+        <button type="submit" disabled={guardando} className="min-h-11 rounded-lg bg-(--primary) px-4 py-3 text-sm font-semibold text-(--on-primary) enabled:hover:bg-(--primary-hover) enabled:active:bg-(--primary-active) disabled:cursor-wait disabled:bg-(--input-border)">{guardando ? "Guardando…" : "Guardar tarea"}</button>
+        <button type="button" onClick={onCancelar} disabled={guardando} className="min-h-11 rounded-lg border border-(--input-border) bg-(--surface) px-4 py-3 text-sm font-semibold enabled:hover:bg-(--surface-hover) disabled:cursor-wait disabled:bg-(--surface-hover) disabled:text-(--text-muted)">Cancelar</button>
       </div>
     </form>
   );

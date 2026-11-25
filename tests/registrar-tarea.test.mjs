@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { afterEach, test } from "node:test";
 import { randomUUID } from "node:crypto";
 import { registrarTarea, CLAVE_TAREAS } from "./soporte/modulos-tareas.mjs";
+import { prepararAlmacenamiento } from "./soporte/almacenamiento-tareas.mjs";
 
 const descriptorWindow = Object.getOwnPropertyDescriptor(globalThis, "window");
 let entorno;
@@ -17,47 +18,8 @@ afterEach(() => {
 });
 
 function preparar(contenido = null, espera = Promise.resolve()) {
-  let cola = espera;
-  let bajoBloqueo = false;
-  entorno = { contenido, operaciones: [], bloqueos: [], falloLectura: false, falloEscritura: false, falloBloqueo: false };
-  const navegador = {
-    locks: {
-      request(nombre, opciones, accion) {
-        entorno.bloqueos.push({ nombre, opciones });
-        if (entorno.falloBloqueo) return Promise.reject(new Error("Bloqueo rechazado"));
-        const resultado = cola.then(async () => {
-          bajoBloqueo = true;
-          try { return await accion(); }
-          finally { bajoBloqueo = false; }
-        });
-        cola = resultado.catch(() => {});
-        return resultado;
-      },
-    },
-  };
-  const criptografia = { randomUUID };
-  Object.defineProperty(globalThis, "window", {
-    configurable: true,
-    value: {
-      navigator: navegador,
-      crypto: criptografia,
-      localStorage: {
-        getItem(clave) {
-          assert.equal(clave, CLAVE_TAREAS);
-          entorno.operaciones.push({ tipo: "lectura", bajoBloqueo });
-          if (entorno.falloLectura) throw new Error("SecurityError");
-          return entorno.contenido;
-        },
-        setItem(clave, valor) {
-          assert.equal(clave, CLAVE_TAREAS);
-          entorno.operaciones.push({ tipo: "escritura", bajoBloqueo });
-          if (entorno.falloEscritura) throw new Error("QuotaExceededError");
-          entorno.contenido = valor;
-        },
-      },
-    },
-  });
-  return { navegador, criptografia };
+  entorno = prepararAlmacenamiento(contenido, espera);
+  return entorno;
 }
 
 function tarea(estado = "pendiente") {

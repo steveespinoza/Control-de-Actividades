@@ -2,7 +2,7 @@
 
 Este documento describe, paso a paso, cómo una tarea cambia de estado y cómo se comunica el resultado del guardado. Se basa en las [historias de usuario](../04-Casos%20de%20Uso/Historias-de-Usuario.md), el [modelo de datos](../05-Datos/Modelo-de-Datos.md) y la [arquitectura general](Arquitectura-General.md).
 
-Los recorridos describen el comportamiento previsto. HU-01 implementa la consulta inicial y HU-02 el registro de pendientes y su guardado. Los movimientos y el avance semanal siguen pendientes de implementación y verificación.
+Los recorridos describen el comportamiento previsto. HU-01 implementa la consulta, HU-02 el registro y HU-03 los movimientos entre Pendiente y En curso. La finalización y el avance semanal siguen pendientes de implementación y verificación.
 
 ## Punto de partida
 
@@ -82,10 +82,10 @@ Si hay **9 tareas en curso** y dos pestañas intentan ingresar tareas distintas,
 
 Si una pestaña completa una tarea, otra no puede devolverla a Pendiente o En curso usando el estado que había leído antes de esa finalización. Dos solicitudes para completar la misma tarea deben conservar una sola finalización y su fecha original.
 
-El registro de HU-02 utiliza un bloqueo exclusivo de Web Locks llamado `control-de-actividades:tareas` para leer la colección vigente y escribirla. Los movimientos deberán compartir ese bloqueo cuando se implementen. Las carreras descritas en esta sección aún requieren implementación y verificación con operaciones concurrentes controladas.
+El registro de HU-02 y los movimientos de HU-03 comparten el bloqueo exclusivo de Web Locks `control-de-actividades:tareas` para leer la colección vigente y escribirla. Los movimientos comprueban capacidad y estado dentro del bloqueo. Las pruebas de dos ingresos encolados y registro con movimiento usan un administrador simulado; la contención simultánea entre pestañas reales sigue pendiente. La finalización aún requiere implementación.
 
 ## Estado y referencias
 
 Los flujos respetan los [requisitos funcionales](../02-Requisitos/Requisitos-Funcionales.md) y los [requisitos no funcionales](../02-Requisitos/Requisitos-No-Funcionales.md). La alternativa para cambiar el estado debe permitir el uso con teclado y, si se incorpora arrastrar y soltar, ofrecer una forma de mover sin arrastrar.
 
-**Estado:** la consulta inicial tiene implementación y comprobaciones descritas en [HU-01](../04-Casos%20de%20Uso/HU-01.%20Consultar%20mi%20tablero.md#verificación-de-esta-entrega), y el registro y su guardado en [HU-02](../04-Casos%20de%20Uso/HU-02.%20Registrar%20un%20pendiente.md#verificación-en-navegador-y-pendientes). Los movimientos y el avance semanal siguen pendientes. No se han ejecutado movimientos con datos reales, pruebas de sus carreras ni comprobaciones de rendimiento como parte de este documento.
+**Estado:** consulta, registro y movimientos entre Pendiente y En curso implementados y documentados en [HU-01](../04-Casos%20de%20Uso/HU-01.%20Consultar%20mi%20tablero.md#verificación-de-esta-entrega), [HU-02](../04-Casos%20de%20Uso/HU-02.%20Registrar%20un%20pendiente.md#verificación-en-navegador-y-pendientes) y [HU-03](../04-Casos%20de%20Uso/HU-03.%20Actualizar%20lo%20que%20estoy%20haciendo.md#verificación-en-navegador-y-pendientes). La finalización y el avance semanal siguen pendientes. Las comprobaciones de navegador utilizaron tareas de prueba; no se han realizado mediciones de rendimiento conforme a RNF-04.
