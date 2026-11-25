@@ -11,13 +11,22 @@ export function prepararAlmacenamiento(contenido = null, espera = Promise.resolv
       request(nombre, opciones, accion) {
         entorno.bloqueos.push({ nombre, opciones });
         if (entorno.falloBloqueo) return Promise.reject(new Error("Bloqueo rechazado"));
-        const resultado = cola.then(async () => {
-          bajoBloqueo = true;
-          try { return await accion(); }
-          finally { bajoBloqueo = false; }
+        const resultado = new Promise((resolve, reject) => {
+          const { signal } = opciones;
+          const cancelar = () => reject(new DOMException("Espera cancelada", "AbortError"));
+          if (signal?.aborted) { cancelar(); return; }
+          signal?.addEventListener("abort", cancelar, { once: true });
+          void cola.then(async () => {
+            signal?.removeEventListener("abort", cancelar);
+            if (signal?.aborted) return;
+            bajoBloqueo = true;
+            try { resolve(await accion()); }
+            catch (error) { reject(error); }
+            finally { bajoBloqueo = false; }
+          });
         });
-        // La cola acepta la siguiente solicitud aunque la anterior falle.
-        cola = resultado.catch(() => {});
+        // Cancelar una solicitud en espera no libera el bloqueo que la precede.
+        cola = Promise.allSettled([cola, resultado]);
         return resultado;
       },
     },

@@ -2,7 +2,7 @@
 
 La aplicación se organiza en tres capas lógicas: **presentación**, **aplicación y reglas**, y **persistencia**. Conserva una sola base de código con Next.js 16, React 19, TypeScript estricto y Tailwind CSS 4, y utiliza **localStorage desde el inicio del desarrollo**.
 
-Este documento describe la arquitectura prevista para las [historias de usuario](../04-Casos%20de%20Uso/Historias-de-Usuario.md) y el [modelo de datos](../05-Datos/Modelo-de-Datos.md). HU-01 implementa la consulta, HU-02 el registro y HU-03 los movimientos entre Pendiente y En curso; la finalización y el avance semanal siguen pendientes.
+Este documento describe la arquitectura de las [historias de usuario](../04-Casos%20de%20Uso/Historias-de-Usuario.md) y el [modelo de datos](../05-Datos/Modelo-de-Datos.md). HU-01 implementa la consulta, HU-02 el registro, HU-03 los movimientos entre Pendiente y En curso, HU-05 la finalización y HU-07 el avance semanal.
 
 ## Diagrama general
 
@@ -29,7 +29,8 @@ La organización prevista en archivos se detalla en [Estructura del proyecto](Es
 ## Reglas en los límites de la arquitectura
 
 - **Guardado consistente:** completar una tarea y registrar su fecha debe ser una sola operación. Repetir la finalización conserva la fecha original y no aumenta el conteo semanal.
-- **Operaciones simultáneas:** el registro y los movimientos comparten el bloqueo exclusivo de Web Locks `control-de-actividades:tareas`. Requiere un contexto seguro y un navegador compatible; sin Web Locks no se guarda. HU-03 comprueba capacidad y estado dentro del bloqueo, respetando el máximo de diez y rechazando la reapertura de completadas. La futura finalización deberá usar el mismo bloqueo.
+- **Espera acotada:** las solicitudes que no obtienen el bloqueo en 2,5 segundos se cancelan con AbortController. La interfaz informa que no se guardó y permite reintentar; liberar el bloqueo no ejecuta después la solicitud cancelada.
+- **Operaciones simultáneas:** el registro, los movimientos y la finalización comparten el bloqueo exclusivo de Web Locks `control-de-actividades:tareas`. Requiere un contexto seguro y un navegador compatible; sin Web Locks no se guarda. HU-03 comprueba capacidad y estado dentro del bloqueo. HU-05 guarda estado y fecha juntos y conserva la fecha original ante una finalización repetida. Las pruebas con bloqueos simulados no acreditan contención simultánea real entre pestañas.
 - **Fechas:** el momento de finalización conserva una referencia temporal explícita. La clasificación semanal y las fechas mostradas utilizan America/Lima, con el inicio del lunes incluido y el comienzo del lunes siguiente excluido.
 - **Acceso:** el usuario abre el tablero sin inicio de sesión. Cada navegador y sitio conserva sus propios datos. Las credenciales de los servicios conservados no son necesarias para el almacenamiento del tablero ni deben enviarse al navegador.
 - **Errores de datos:** una lectura fallida se comunica como error. Una escritura fallida no se confirma como guardada y un movimiento no debe perder ni duplicar tareas.
@@ -53,13 +54,18 @@ La conservación de los datos depende del navegador. Esta decisión no fija un p
 | Consulta del tablero y localStorage | Lectura y validación implementadas en HU-01, con carga, vacío, error, columnas, títulos y ocupación de En curso. |
 | Registro de pendientes | Formulario, validación y guardado de HU-02 con Web Locks; conserva la colección vigente y solo confirma después de escribir. |
 | Movimientos entre Pendiente y En curso | Botones y guardado coordinado de HU-03, con capacidad, cierre de completadas, espera y errores. |
-| Demás funciones | Finalización y avance semanal pendientes de implementación. |
+| Finalización | Botón Completar tarea, fecha UTC y estado guardados juntos, cierre definitivo y repetición sin nueva escritura. |
+| Avance semanal | Intervalo y conteo en Lima, navegación entre semanas, lectura validada y error sin un cero falso. |
 | Modelo de datos | Documenta la colección local y sus reglas de validación e integridad. |
 | S3 y Vercel | Configuración conservada de S3 y destino previsto de despliegue, sin integración funcional de archivos ni despliegue verificado. |
 
-Las comprobaciones de consulta están en [HU-01](../04-Casos%20de%20Uso/HU-01.%20Consultar%20mi%20tablero.md#verificación-de-esta-entrega), y las de registro, coordinación y sus límites en [HU-02](../04-Casos%20de%20Uso/HU-02.%20Registrar%20un%20pendiente.md#verificación-en-navegador-y-pendientes). La contención simultánea controlada entre pestañas reales sigue pendiente de verificar.
+Las comprobaciones de consulta están en [HU-01](../04-Casos%20de%20Uso/HU-01.%20Consultar%20mi%20tablero.md#verificación-de-esta-entrega), y las de registro, coordinación y sus límites en [HU-02](../04-Casos%20de%20Uso/HU-02.%20Registrar%20un%20pendiente.md#verificación-en-navegador-y-pendientes). La contención real de dos ingresos desde nueve en curso está en [HU-04](../04-Casos%20de%20Uso/HU-04.%20Limitar%20mi%20trabajo%20en%20curso.md#verificación-de-contención-real).
 
 Los movimientos y el rechazo por capacidad con una vista desactualizada se comprobaron en producción local, según [HU-03](../04-Casos%20de%20Uso/HU-03.%20Actualizar%20lo%20que%20estoy%20haciendo.md#verificación-en-navegador-y-pendientes). Los casos encolados de las pruebas automatizadas utilizan bloqueos simulados.
+
+La finalización, la liberación de capacidad y el cierre desde otra pestaña desactualizada se revisaron en escritorio y móvil, según [HU-05](../04-Casos%20de%20Uso/HU-05.%20Completar%20una%20tarea.md#verificación-en-navegador-y-pendientes). La fecha inmutable y los fallos de escritura se comprobaron con reloj y almacenamiento simulados; la revisión posterior de [HU-06](../04-Casos%20de%20Uso/HU-06.%20Continuar%20con%20mis%20tareas%20guardadas.md#verificación-de-fallos-y-envíos-repetidos) cubre fallos de almacenamiento inyectados desde la interfaz y envíos repetidos.
+
+La revisión posterior de HU-05 incluye dos cierres solapados reales, repetición con fecha conservada y cancelación de espera sin finalización tardía. El cálculo semanal, sus límites del lunes y el error ante JSON inválido se detallan en [HU-07](../04-Casos%20de%20Uso/HU-07.%20Revisar%20lo%20que%20termin%C3%A9%20en%20la%20semana.md#verificación-y-pendientes). Estas revisiones locales no acreditan despliegue, rendimiento bajo Wi-Fi o 4G ni compatibilidad completa.
 
 ## Referencias
 

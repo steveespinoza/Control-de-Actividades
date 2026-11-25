@@ -14,7 +14,7 @@ after(() => {
   rmSync(carpetaTemporal, { recursive: true, force: true });
 });
 
-for (const archivo of ["tareas.ts", "client/tareas.ts"]) {
+for (const archivo of ["tareas.ts", "client/tareas.ts", "avance-semanal.ts"]) {
   const origen = path.join(fileURLToPath(new URL("../../app/lib/", import.meta.url)), archivo);
   const destino = path.join(carpetaTemporal, archivo.replace(/\.ts$/, ".js"));
   const { outputText } = ts.transpileModule(readFileSync(origen, "utf8"), {
@@ -26,4 +26,6 @@ for (const archivo of ["tareas.ts", "client/tareas.ts"]) {
 }
 
 const { default: modulo } = await import(pathToFileURL(path.join(carpetaTemporal, "client/tareas.js")).href);
-export const { leerTareas, registrarTarea, moverTarea, CLAVE_TAREAS } = modulo;
+export const { leerTareas, registrarTarea, moverTarea, completarTarea, CLAVE_TAREAS } = modulo;
+const { default: avance } = await import(pathToFileURL(path.join(carpetaTemporal, "avance-semanal.js")).href);
+export const { calcularAvanceSemanal } = avance;

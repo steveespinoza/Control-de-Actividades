@@ -1,6 +1,6 @@
 # Modelo de datos — Control de Actividades
 
-Este documento define el modelo lógico mínimo para las [historias de usuario](../04-Casos%20de%20Uso/Historias-de-Usuario.md), a partir de los [requisitos funcionales](../02-Requisitos/Requisitos-Funcionales.md). El diseño utiliza localStorage desde el inicio del desarrollo. HU-01 implementa la lectura, HU-02 el registro y HU-03 los cambios entre Pendiente y En curso; la finalización sigue pendiente.
+Este documento define el modelo lógico mínimo para las [historias de usuario](../04-Casos%20de%20Uso/Historias-de-Usuario.md), a partir de los [requisitos funcionales](../02-Requisitos/Requisitos-Funcionales.md). El diseño utiliza localStorage desde el inicio del desarrollo. HU-01 implementa la lectura, HU-02 el registro, HU-03 los cambios entre Pendiente y En curso y HU-05 la finalización con fecha UTC.
 
 ## Entidad Tarea
 
@@ -46,7 +46,7 @@ La creación y los movimientos están definidos en RF-02 y RF-03. Una tarea pert
 
 La aplicación deberá validar la colección al leer y guardar: identificadores únicos, títulos no vacíos, estados válidos y correspondencia entre estado completado y fecha de finalización. Los datos inválidos o una lectura fallida deben comunicarse como error, sin presentarlos como una colección vacía.
 
-El registro y los movimientos de HU-03 leen la colección vigente dentro de un bloqueo exclusivo de Web Locks llamado `control-de-actividades:tareas`. El registro añade un pendiente con UUID y fecha nula. El movimiento cambia solo el estado, comprueba la capacidad antes de ingresar a En curso y rechaza tareas completadas. Ambas operaciones escriben el arreglo completo. La futura finalización deberá compartir ese bloqueo y conservar su fecha ante solicitudes repetidas.
+El registro, los movimientos de HU-03 y la finalización de HU-05 leen la colección vigente dentro de un bloqueo exclusivo de Web Locks llamado `control-de-actividades:tareas`. El registro añade un pendiente con UUID y fecha nula. El movimiento cambia solo el estado, comprueba la capacidad antes de ingresar a En curso y rechaza tareas completadas. La finalización obtiene el instante UTC dentro del bloqueo y guarda juntos estado y fecha en una escritura del arreglo completo. Una tarea ya completada devuelve su fecha original sin volver a escribir. La espera del bloqueo se cancela a los 2,5 segundos sin escritura tardía. Las pruebas automatizadas usan bloqueos simulados; HU-04 y HU-05 documentan contención real de dos ingresos y dos cierres.
 
 ## Datos calculados
 
@@ -77,7 +77,7 @@ Ejemplo del formato de almacenamiento; no se carga automáticamente en la aplica
 ]
 ```
 
-La consulta no escribe ni inicializa la clave. El registro inicializa el arreglo al guardar la primera tarea y conserva todas las tareas existentes al añadir las siguientes. Los movimientos de HU-03 conservan este modelo, sin duplicar ni eliminar tareas. Una lectura fallida o un contenido inválido impiden escribir. El avance semanal futuro se calculará desde las fechas guardadas.
+La consulta no escribe ni inicializa la clave. El registro inicializa el arreglo al guardar la primera tarea y conserva todas las tareas existentes al añadir las siguientes. Los movimientos de HU-03 conservan este modelo, sin duplicar ni eliminar tareas. Una lectura fallida o un contenido inválido impiden escribir. El avance semanal se calcula desde las fechas guardadas, sin persistir contadores adicionales.
 
 Los datos quedan asociados al mismo sitio y navegador. La recarga y la reapertura recuperan la información mientras se conserven sus datos locales, sin sincronización entre navegadores o dispositivos.
 
@@ -87,4 +87,4 @@ Los datos quedan asociados al mismo sitio y navegador. La recarga y la reapertur
 
 El modelo respeta el [alcance del MVP](../03-Alcance/Alcance-MVP.md) y sus [exclusiones](../03-Alcance/Fuera-de-Alcance.md). El acceso personal sin cuentas y la ausencia de adjuntos, subtareas y colaboración mantienen el modelo centrado en Tarea.
 
-**Estado:** lectura de HU-01, registro de HU-02 y movimientos de HU-03 implementados. La finalización sigue pendiente. Las verificaciones se detallan en [HU-01](../04-Casos%20de%20Uso/HU-01.%20Consultar%20mi%20tablero.md#verificación-de-esta-entrega), [HU-02](../04-Casos%20de%20Uso/HU-02.%20Registrar%20un%20pendiente.md#verificación-en-navegador-y-pendientes) y [HU-03](../04-Casos%20de%20Uso/HU-03.%20Actualizar%20lo%20que%20estoy%20haciendo.md#verificación-en-navegador-y-pendientes).
+**Estado:** lectura de HU-01, registro de HU-02, movimientos de HU-03 y finalización de HU-05 implementados. HU-07 implementa el avance semanal desde las fechas guardadas, con pruebas de límites y zonas del dispositivo. Las verificaciones se detallan en [HU-01](../04-Casos%20de%20Uso/HU-01.%20Consultar%20mi%20tablero.md#verificación-de-esta-entrega), [HU-02](../04-Casos%20de%20Uso/HU-02.%20Registrar%20un%20pendiente.md#verificación-en-navegador-y-pendientes), [HU-03](../04-Casos%20de%20Uso/HU-03.%20Actualizar%20lo%20que%20estoy%20haciendo.md#verificación-en-navegador-y-pendientes) y [HU-05](../04-Casos%20de%20Uso/HU-05.%20Completar%20una%20tarea.md#verificación-en-navegador-y-pendientes).

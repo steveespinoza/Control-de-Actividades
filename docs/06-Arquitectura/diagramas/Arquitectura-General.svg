@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="840" height="900" viewBox="0 0 840 900" role="img" aria-labelledby="title description">
   <title id="title">Arquitectura local — Control de Actividades</title>
-  <desc id="description">Next.js entrega la aplicación. La arquitectura sitúa la presentación con React y Tailwind, las reglas con TypeScript y localStorage en el navegador. HU-01 implementa la consulta; HU-02 el registro y HU-03 los movimientos entre Pendiente y En curso, coordinados con Web Locks. La finalización y el avance semanal siguen pendientes. No hay sincronización, respaldos ni restauración. Si se borran los datos locales, las tareas se pierden para la aplicación.</desc>
+  <desc id="description">Next.js entrega la aplicación. La arquitectura sitúa la presentación con React y Tailwind, las reglas con TypeScript y localStorage en el navegador. HU-01 implementa la consulta; HU-02 el registro, HU-03 los movimientos y HU-05 la finalización con fecha UTC, coordinados con Web Locks. HU-07 calcula y presenta el avance semanal en Lima. No hay sincronización, respaldos ni restauración. Si se borran los datos locales, las tareas se pierden para la aplicación.</desc>
   <defs>
     <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
       <path d="M0 0L8 4L0 8Z" fill="#334155"/>
@@ -37,7 +37,7 @@
       <text x="420" y="838">Si se borran los datos del navegador, las tareas se pierden.</text>
     </g>
     <text x="420" y="770" font-size="19" font-weight="bold">localStorage desde el inicio del desarrollo</text>
-    <text x="420" y="875" font-size="14">HU-01 a HU-03 implementadas. Finalización y avance semanal pendientes.</text>
+    <text x="420" y="875" font-size="14">Consulta, registro, movimientos, cierre y avance semanal implementados.</text>
     <text x="435" y="218" fill="#475569" font-size="14" text-anchor="start">entrega</text>
   </g>
 </svg>
