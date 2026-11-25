@@ -2,7 +2,7 @@
 
 Este documento describe, paso a paso, cómo una tarea cambia de estado y cómo se comunica el resultado del guardado. Se basa en las [historias de usuario](../04-Casos%20de%20Uso/Historias-de-Usuario.md), el [modelo de datos](../05-Datos/Modelo-de-Datos.md) y la [arquitectura general](Arquitectura-General.md).
 
-Los recorridos describen el comportamiento previsto. HU-01 implementa la consulta, HU-02 el registro y HU-03 los movimientos entre Pendiente y En curso. La finalización y el avance semanal siguen pendientes de implementación y verificación.
+HU-01 implementa la consulta, HU-02 el registro, HU-03 los movimientos entre Pendiente y En curso, HU-05 la finalización y HU-07 el avance semanal. Los límites de verificación se detallan en cada historia.
 
 ## Punto de partida
 
@@ -67,6 +67,16 @@ Estas condiciones deben mantenerse también ante solicitudes simultáneas desde 
 
 Un rechazo por falta de capacidad comunica que se alcanzó el límite. Un fallo al consultar los datos se comunica como error de lectura y no se presenta como un tablero vacío.
 
+Si otra pestaña retiene el bloqueo, la solicitud espera hasta 2,5 segundos. Al vencer el plazo, se cancela, comunica que no se guardó y recupera los controles. El registro conserva el título. Liberar el bloqueo después no ejecuta la solicitud cancelada.
+
+## 6. Consultar el avance semanal
+
+1. El usuario abre **Avance semanal** desde el menú, en `/avance-semanal`. La vista comienza en la semana actual y permite consultar semanas anteriores y siguientes.
+2. La consulta indica carga y vuelve a leer y validar las tareas locales.
+3. Si la lectura falla, muestra un error y permite reintentar, sin mostrar un conteo de cero.
+4. Con datos válidos, calcula el intervalo en America/Lima, desde el lunes incluido hasta el lunes siguiente excluido, y muestra lunes a domingo junto al total de finalizaciones.
+5. Al abrir la vista o consultar una semana se incorporan los cambios guardados en el tablero. Consultar no escribe tareas ni persiste contadores.
+
 ## Recorrido del guardado local
 
 1. La interfaz envía la acción a la lógica de tareas del navegador e indica que la operación está en curso.
@@ -82,10 +92,10 @@ Si hay **9 tareas en curso** y dos pestañas intentan ingresar tareas distintas,
 
 Si una pestaña completa una tarea, otra no puede devolverla a Pendiente o En curso usando el estado que había leído antes de esa finalización. Dos solicitudes para completar la misma tarea deben conservar una sola finalización y su fecha original.
 
-El registro de HU-02 y los movimientos de HU-03 comparten el bloqueo exclusivo de Web Locks `control-de-actividades:tareas` para leer la colección vigente y escribirla. Los movimientos comprueban capacidad y estado dentro del bloqueo. Las pruebas de dos ingresos encolados y registro con movimiento usan un administrador simulado; la contención simultánea entre pestañas reales sigue pendiente. La finalización aún requiere implementación.
+El registro de HU-02, los movimientos de HU-03 y la finalización de HU-05 comparten el bloqueo exclusivo de Web Locks `control-de-actividades:tareas` para leer la colección vigente y escribirla. Los movimientos comprueban capacidad y estado dentro del bloqueo. La finalización conserva la fecha de una completada sin escribir de nuevo y guarda juntos estado y fecha cuando aún está activa. Las pruebas automatizadas usan bloqueos simulados. La contención real de dos ingresos y dos cierres está documentada en HU-04 y HU-05.
 
 ## Estado y referencias
 
 Los flujos respetan los [requisitos funcionales](../02-Requisitos/Requisitos-Funcionales.md) y los [requisitos no funcionales](../02-Requisitos/Requisitos-No-Funcionales.md). La alternativa para cambiar el estado debe permitir el uso con teclado y, si se incorpora arrastrar y soltar, ofrecer una forma de mover sin arrastrar.
 
-**Estado:** consulta, registro y movimientos entre Pendiente y En curso implementados y documentados en [HU-01](../04-Casos%20de%20Uso/HU-01.%20Consultar%20mi%20tablero.md#verificación-de-esta-entrega), [HU-02](../04-Casos%20de%20Uso/HU-02.%20Registrar%20un%20pendiente.md#verificación-en-navegador-y-pendientes) y [HU-03](../04-Casos%20de%20Uso/HU-03.%20Actualizar%20lo%20que%20estoy%20haciendo.md#verificación-en-navegador-y-pendientes). La finalización y el avance semanal siguen pendientes. Las comprobaciones de navegador utilizaron tareas de prueba; no se han realizado mediciones de rendimiento conforme a RNF-04.
+**Estado:** consulta, registro, movimientos entre Pendiente y En curso y finalización implementados y documentados en [HU-01](../04-Casos%20de%20Uso/HU-01.%20Consultar%20mi%20tablero.md#verificación-de-esta-entrega), [HU-02](../04-Casos%20de%20Uso/HU-02.%20Registrar%20un%20pendiente.md#verificación-en-navegador-y-pendientes), [HU-03](../04-Casos%20de%20Uso/HU-03.%20Actualizar%20lo%20que%20estoy%20haciendo.md#verificación-en-navegador-y-pendientes) y [HU-05](../04-Casos%20de%20Uso/HU-05.%20Completar%20una%20tarea.md#verificación-en-navegador-y-pendientes). HU-07 implementa la consulta semanal con intervalo, conteo y errores sin un cero falso. Las comprobaciones de navegador utilizaron tareas de prueba; no se han realizado mediciones de rendimiento conforme a RNF-04.

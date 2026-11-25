@@ -2,21 +2,45 @@ import { esTarea, MAX_TAREAS_EN_CURSO, type Tarea } from "../tareas";
 
 export const CLAVE_TAREAS = "control-de-actividades:tareas";
 
+async function conBloqueo<T>(accion: () => T): Promise<T> {
+  const controlador = new AbortController();
+  const temporizador = setTimeout(() => controlador.abort(), 2500);
+  try {
+    return await window.navigator.locks.request(CLAVE_TAREAS, {
+      mode: "exclusive",
+      signal: controlador.signal,
+    }, () => {
+      clearTimeout(temporizador);
+      return accion();
+    });
+  } finally {
+    clearTimeout(temporizador);
+  }
+}
+
+function motivoGuardado(error: unknown): "espera" | "guardado" {
+  return error instanceof Error && error.name === "AbortError" ? "espera" : "guardado";
+}
+
 export type LecturaTareas =
   | { estado: "lista"; tareas: Tarea[] }
   | { estado: "error"; motivo: "acceso" | "datos" };
 
 export type RegistroTarea =
   | { estado: "guardada"; tareas: Tarea[] }
-  | { estado: "error"; motivo: "titulo" | "acceso" | "datos" | "guardado" | "navegador" };
+  | { estado: "error"; motivo: "titulo" | "acceso" | "datos" | "guardado" | "navegador" | "espera" };
 
 export type MovimientoTarea =
   | { estado: "guardada"; tareas: Tarea[] }
   | {
       estado: "error";
-      motivo: "acceso" | "datos" | "guardado" | "navegador" | "destino" | "no_encontrada" | "completada" | "capacidad";
+      motivo: "acceso" | "datos" | "guardado" | "navegador" | "espera" | "destino" | "no_encontrada" | "completada" | "capacidad";
       tareas?: Tarea[];
     };
+
+export type FinalizacionTarea =
+  | { estado: "guardada"; tareas: Tarea[] }
+  | { estado: "error"; motivo: "acceso" | "datos" | "guardado" | "navegador" | "espera" | "no_encontrada"; tareas?: Tarea[] };
 
 export function leerTareas(): LecturaTareas {
   let contenido: string | null;
@@ -56,7 +80,7 @@ export async function registrarTarea(titulo: string): Promise<RegistroTarea> {
     if (!window.navigator.locks) return { estado: "error", motivo: "navegador" };
 
     // La lectura y la escritura comparten un bloqueo entre pestañas del mismo sitio.
-    return await window.navigator.locks.request(CLAVE_TAREAS, { mode: "exclusive" }, () => {
+    return await conBloqueo<RegistroTarea>(() => {
       const lectura = leerTareas();
       if (lectura.estado === "error") return lectura;
 
@@ -75,8 +99,8 @@ export async function registrarTarea(titulo: string): Promise<RegistroTarea> {
       window.localStorage.setItem(CLAVE_TAREAS, JSON.stringify(tareas));
       return { estado: "guardada", tareas };
     });
-  } catch {
-    return { estado: "error", motivo: "guardado" };
+  } catch (error) {
+    return { estado: "error", motivo: motivoGuardado(error) };
   }
 }
 
@@ -86,7 +110,7 @@ export async function moverTarea(id: string, destino: "pendiente" | "en_curso"):
   try {
     if (!window.navigator.locks) return { estado: "error", motivo: "navegador" };
 
-    return await window.navigator.locks.request(CLAVE_TAREAS, { mode: "exclusive" }, () => {
+    return await conBloqueo<MovimientoTarea>(() => {
       const lectura = leerTareas();
       if (lectura.estado === "error") return lectura;
 
@@ -103,7 +127,32 @@ export async function moverTarea(id: string, destino: "pendiente" | "en_curso"):
       window.localStorage.setItem(CLAVE_TAREAS, JSON.stringify(tareas));
       return { estado: "guardada", tareas };
     });
-  } catch {
-    return { estado: "error", motivo: "guardado" };
+  } catch (error) {
+    return { estado: "error", motivo: motivoGuardado(error) };
+  }
+}
+
+export async function completarTarea(id: string): Promise<FinalizacionTarea> {
+  try {
+    if (!window.navigator.locks) return { estado: "error", motivo: "navegador" };
+
+    return await conBloqueo<FinalizacionTarea>(() => {
+      const lectura = leerTareas();
+      if (lectura.estado === "error") return lectura;
+
+      const tarea = lectura.tareas.find((existente) => existente.id.toLowerCase() === id.toLowerCase());
+      if (!tarea) return { estado: "error", motivo: "no_encontrada", tareas: lectura.tareas };
+      if (tarea.estado === "completada") return { estado: "guardada", tareas: lectura.tareas };
+
+      const fechaFinalizacion = new Date().toISOString();
+      const tareas = lectura.tareas.map((existente) => existente.id === tarea.id
+        ? { ...existente, estado: "completada" as const, fecha_finalizacion: fechaFinalizacion }
+        : existente);
+      // Estado y fecha se confirman juntos, en una única escritura de la colección.
+      window.localStorage.setItem(CLAVE_TAREAS, JSON.stringify(tareas));
+      return { estado: "guardada", tareas };
+    });
+  } catch (error) {
+    return { estado: "error", motivo: motivoGuardado(error) };
   }
 }

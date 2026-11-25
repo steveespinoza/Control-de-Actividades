@@ -43,7 +43,7 @@ Las funciones y condiciones excluidas se detallan en [Fuera de alcance](Fuera-de
 
 ## Criterios para considerar terminada la entrega
 
-Los siguientes puntos deben comprobarse sobre la implementación; todavía no se marcan como cumplidos:
+La aprobación final requiere completar los puntos siguientes. La evidencia disponible y sus límites se detallan en las historias; esta lista no declara verificada la entrega completa:
 
 - [ ] Se puede abrir el tablero, crear tareas, moverlas dentro de las reglas y consultar el avance semanal, conforme a RF-01 a RF-06.
 - [ ] El máximo de 10 tareas en curso y la prohibición de reapertura se mantienen también ante operaciones desde dos pestañas; los reintentos no duplican tareas ni finalizaciones.
@@ -64,4 +64,6 @@ Se mantienen las obligaciones de informar errores de lectura o escritura y de pr
 
 ## Estado actual
 
-El repositorio contiene la consulta de HU-01, el registro de HU-02 y los movimientos entre Pendiente y En curso de HU-03. Los cambios se muestran después del guardado y comparten un bloqueo entre pestañas; los ingresos a En curso respetan el máximo de diez. La finalización y el avance semanal siguen pendientes. Las verificaciones y sus límites están en [HU-01](../04-Casos%20de%20Uso/HU-01.%20Consultar%20mi%20tablero.md#verificación-de-esta-entrega), [HU-02](../04-Casos%20de%20Uso/HU-02.%20Registrar%20un%20pendiente.md#verificación-en-navegador-y-pendientes) y [HU-03](../04-Casos%20de%20Uso/HU-03.%20Actualizar%20lo%20que%20estoy%20haciendo.md#verificación-en-navegador-y-pendientes); la aprobación del MVP sigue pendiente.
+El repositorio contiene la consulta de HU-01, el registro de HU-02, los movimientos entre Pendiente y En curso de HU-03 y la finalización de HU-05. Los cambios se muestran después del guardado y comparten un bloqueo entre pestañas; los ingresos a En curso respetan el máximo de diez y el cierre guarda estado y fecha juntos. HU-07 incorpora el avance semanal con intervalo, conteo y navegación entre semanas. Las verificaciones y sus límites están en [HU-01](../04-Casos%20de%20Uso/HU-01.%20Consultar%20mi%20tablero.md#verificación-de-esta-entrega), [HU-02](../04-Casos%20de%20Uso/HU-02.%20Registrar%20un%20pendiente.md#verificación-en-navegador-y-pendientes), [HU-03](../04-Casos%20de%20Uso/HU-03.%20Actualizar%20lo%20que%20estoy%20haciendo.md#verificación-en-navegador-y-pendientes) y [HU-05](../04-Casos%20de%20Uso/HU-05.%20Completar%20una%20tarea.md#verificación-en-navegador-y-pendientes); la aprobación del MVP sigue pendiente.
+
+La [revisión por criterio de HU-04](../04-Casos%20de%20Uso/HU-04.%20Limitar%20mi%20trabajo%20en%20curso.md#revisión-por-criterio-de-aceptación) identifica la cobertura del límite. Con HU-05 se comprobó la salida a Completadas y la creación con En curso lleno. La contención real de dos ingresos desde nueve en curso ya se comprobó; el método y los resultados están en la verificación de HU-04. La aprobación del MVP sigue pendiente por los requisitos transversales de calidad.

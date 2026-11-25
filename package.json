@@ -9,7 +9,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "node --test tests/leer-tareas.test.mjs tests/registrar-tarea.test.mjs tests/mover-tarea.test.mjs",
+    "test": "node --test tests/leer-tareas.test.mjs tests/registrar-tarea.test.mjs tests/mover-tarea.test.mjs tests/completar-tarea.test.mjs tests/espera-bloqueo.test.mjs tests/avance-semanal.test.mjs",
     "lint": "eslint .",
     "typecheck": "next typegen && tsc --noEmit"
   },

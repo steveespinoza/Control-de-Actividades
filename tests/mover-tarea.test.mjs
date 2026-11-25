@@ -12,7 +12,8 @@ afterEach(() => {
   else delete globalThis.window;
   for (const peticion of entorno.bloqueos) {
     assert.equal(peticion.nombre, CLAVE_TAREAS);
-    assert.deepEqual(peticion.opciones, { mode: "exclusive" });
+    assert.equal(peticion.opciones.mode, "exclusive");
+    assert.ok(peticion.opciones.signal instanceof AbortSignal);
   }
   assert.ok(entorno.operaciones.every((operacion) => operacion.bajoBloqueo));
 });
