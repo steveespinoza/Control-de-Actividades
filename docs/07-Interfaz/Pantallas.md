@@ -31,6 +31,16 @@ Estos ajustes completan la interfaz del alcance vigente. Las imágenes se mantie
 
 ## Estado
 
-**Prototipos documentados.** Las imágenes siguen siendo referencias de baja fidelidad. HU-01 implementa una primera interfaz con fondo oscuro y acentos naranja, columnas paralelas en escritorio y apiladas en móvil, títulos, ocupación de En curso y estados de carga, vacío y error. HU-02 añade el botón **Nueva tarea** y un formulario con título, validación, guardado, cancelación y errores. Los movimientos y el avance semanal siguen pendientes.
+**Prototipos documentados e interfaz en desarrollo.** Las imágenes siguen siendo referencias de baja fidelidad. La interfaz actual utiliza un lienzo claro, cabecera blanca y barra lateral oscura, con terracota para la identidad y la acción principal. Las columnas se muestran paralelas en escritorio y apiladas en móvil. HU-01 permite consultar títulos, ocupación de En curso y estados de carga, vacío y error. HU-02 añade el registro. HU-03 incorpora **Pasar a En curso** y **Volver a Pendiente**, mensajes de espera, éxito y error, y conservación del foco. La finalización y el avance semanal siguen pendientes.
 
 La revisión visual inicial se describe en [HU-01](../04-Casos%20de%20Uso/HU-01.%20Consultar%20mi%20tablero.md#verificación-de-esta-entrega), y la del formulario y tareas registradas en [HU-02](../04-Casos%20de%20Uso/HU-02.%20Registrar%20un%20pendiente.md#verificación-en-navegador-y-pendientes). Las capturas del prototipo no acreditan pruebas de funcionamiento ni la compatibilidad completa. El comportamiento esperado se conserva en los requisitos y en los [flujos de una tarea](../06-Arquitectura/Flujos.md).
+
+La revisión de movimientos, teclado y límite de capacidad en producción local está en [HU-03](../04-Casos%20de%20Uso/HU-03.%20Actualizar%20lo%20que%20estoy%20haciendo.md#verificación-en-navegador-y-pendientes). Se utilizaron botones, sin implementar arrastrar y soltar.
+
+## Presentación actual y verificación
+
+La cabecera reúne **Mi tablero**, **Datos en este navegador** y **Nueva tarea**. Las pistas grises contienen tarjetas blancas con franja ámbar en Pendiente, terracota en En curso y esmeralda en Completadas. Los encabezados y contadores también identifican cada estado mediante texto. Las tarjetas completadas incluyen el indicador **Tarea cerrada** y no ofrecen controles de reapertura. En escritorio, las listas permiten desplazamiento vertical con teclado; en móvil, la navegación pasa a una cabecera compacta.
+
+Revisé la compilación de producción local en tamaños de **1280 × 800** y **390 × 844**. Comprobé el tablero vacío, tarjetas pendientes y en curso, ocupación **10 / 10**, mensajes de validación y capacidad, movimientos mediante teclado, retorno del foco y un título largo con etiquetas mostradas como texto. No observé desbordamiento horizontal en esos tamaños ni errores en la consola. Medí 13 pares de colores de texto y fondo, incluidos botones normales, hover, presionados y deshabilitados: todos superaron **4,5:1**. Esto no constituye una auditoría completa de accesibilidad.
+
+En esta revisión visual no forcé errores de lectura o escritura ni esperas prolongadas de guardado, y no hubo tarjetas completadas en los datos de prueba. Quedan pendientes esas comprobaciones, la evaluación con 200 tareas y la matriz de navegadores de los requisitos no funcionales. Las pruebas de datos con almacenamiento y bloqueos simulados se ejecutan con `npm test`; su cobertura está descrita en las historias correspondientes.

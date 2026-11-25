@@ -1,24 +1,38 @@
 @import "tailwindcss";
 
 :root {
-  color-scheme: dark;
-  --app-bg: #100d0a;
-  --sidebar-bg: #14100d;
-  --surface: #1c1611;
-  --surface-hover: #292017;
-  --border: #3b2d22;
-  --input-border: #7a6657;
-  --text: #f7f2ec;
-  --text-muted: #b6a89b;
-  --primary: #f97316;
-  --primary-hover: #fb923c;
-  --primary-active: #ea580c;
-  --on-primary: #1c1007;
-  --primary-soft: #332014;
-  --primary-text: #fdba74;
-  --focus: #fdba74;
-  --error-border: #b65e50;
-  --error-text: #fca5a5;
+  color-scheme: light;
+  --sidebar-bg: #161e2b;
+  --sidebar-surface: #232e40;
+  --sidebar-active-bg: #362528;
+  --sidebar-active-text: #f48c72;
+  --sidebar-text: #e2e8f0;
+  --sidebar-muted: #94a3b8;
+  --sidebar-focus: #f48c72;
+  --app-bg: #f8fafc;
+  --column-bg: #eef2f6;
+  --surface: #ffffff;
+  --surface-hover: #f1f5f9;
+  --border: #e2e8f0;
+  --input-border: #64748b;
+  --text: #0f172a;
+  --text-muted: #475569;
+  --primary: #c84b31;
+  --primary-hover: #b24028;
+  --primary-active: #993520;
+  --on-primary: #ffffff;
+  --primary-soft: #fdeee9;
+  --primary-text: #9e3620;
+  --pending-accent: #d97706;
+  --pending-text: #334155;
+  --progress-accent: #c84b31;
+  --done-accent: #059669;
+  --done-soft: #ecfdf5;
+  --done-text: #065f46;
+  --error-bg: #fef2f2;
+  --error-border: #dc2626;
+  --error-text: #991b1b;
+  --focus: #c84b31;
 }
 
 body {
@@ -39,6 +53,28 @@ button {
 :focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: 4px;
+}
+
+.sidebar :focus-visible {
+  outline-color: var(--sidebar-focus);
+}
+
+.columna-tareas {
+  --state-accent: var(--pending-accent);
+  --state-text: var(--pending-text);
+  --state-soft: var(--surface);
+}
+
+.columna-tareas[data-estado="en_curso"] {
+  --state-accent: var(--progress-accent);
+  --state-text: var(--primary-text);
+  --state-soft: var(--primary-soft);
+}
+
+.columna-tareas[data-estado="completada"] {
+  --state-accent: var(--done-accent);
+  --state-text: var(--done-text);
+  --state-soft: var(--done-soft);
 }
 
 .skip-link {

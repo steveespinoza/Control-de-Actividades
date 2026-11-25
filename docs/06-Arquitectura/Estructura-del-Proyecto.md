@@ -14,10 +14,12 @@ La tabla siguiente identifica el código existente. El árbol posterior incluye 
 | `app/_components/tablero.tsx` | Consulta de HU-01: columnas, títulos, ocupación de En curso y estados de carga, vacío y error. |
 | `app/_components/formulario-tarea.tsx` | Registro de HU-02, validación de título, espera, error y conservación del valor ante fallos. |
 | `app/lib/tareas.ts` | Tipo Tarea, validación de atributos y máximo de tareas en curso. |
-| `app/lib/client/tareas.ts` | Lectura validada y registro de tareas en localStorage, con bloqueo exclusivo entre pestañas mediante Web Locks. |
+| `app/lib/client/tareas.ts` | Lectura, registro y movimientos entre Pendiente y En curso, con bloqueo compartido de Web Locks. |
 | `tests/leer-tareas.test.mjs` | Veinte pruebas de la función real de lectura con almacenamiento simulado, ejecutadas mediante `npm test`. |
 | `tests/registrar-tarea.test.mjs` | Dieciocho pruebas de la función real de registro con almacenamiento y bloqueos simulados, incluidas en `npm test`. |
-| `tests/soporte/modulos-tareas.mjs` | Transpilación temporal de los módulos reales de tareas para ambas suites de Node.js. |
+| `tests/mover-tarea.test.mjs` | Veintiuna pruebas de movimiento, capacidad, cierre de completadas, fallos y operaciones encoladas. |
+| `tests/soporte/modulos-tareas.mjs` | Transpilación temporal de los módulos reales de tareas para las tres suites de Node.js. |
+| `tests/soporte/almacenamiento-tareas.mjs` | Almacenamiento y administrador de bloqueos simulados, compartidos por registro y movimiento. |
 | `docs/` | Requisitos, historias, modelo de datos y diseño de arquitectura. |
 
 Las dependencias y los comandos existentes están en `package.json`. Se mantienen TypeScript estricto y el alias `@/*` hacia la raíz de `tsconfig.json`.
@@ -42,7 +44,7 @@ app/
     └── client/
         └── tareas.ts                Lectura, validación y guardado en localStorage.
 
-tests/                               Pruebas de lectura y registro; otras pruebas se añadirán con sus historias.
+tests/                               Pruebas de lectura, registro y movimiento; otras pruebas se añadirán con sus historias.
 docs/                                Documentación del proyecto.
 package.json                         Dependencias y comandos.
 package-lock.json                    Versiones resueltas.
@@ -63,7 +65,7 @@ El esquema lógico de Tarea está en el [modelo de datos](../05-Datos/Modelo-de-
 | `app/lib/tareas.ts` | Reunir el tipo Tarea, los valores de estado y las validaciones compartidas. |
 | `app/lib/semanas.ts` | Calcular los límites semanales y clasificar las finalizaciones usando America/Lima. |
 | `app/lib/client/tareas.ts` | Leer, validar y guardar la colección de tareas en localStorage. Coordinar cambios entre pestañas y comunicar fallos de lectura o escritura. |
-| `tests/` | Pruebas de lectura de HU-01 y registro de HU-02 mediante `npm test` y el ejecutor de Node.js. Las pruebas de movimientos y su concurrencia se incorporarán con esas implementaciones. |
+| `tests/` | Pruebas de lectura, registro y movimientos de HU-01 a HU-03 mediante `npm test` y el ejecutor de Node.js, con almacenamiento y bloqueos simulados. |
 
 Los componentes pueden contener sus columnas y tarjetas mientras resulte sencillo mantenerlos juntos. Los archivos se dividirán cuando haya una responsabilidad concreta o reutilización que lo justifique.
 
@@ -73,7 +75,7 @@ Los módulos compartidos de tareas y semanas contendrán tipos y lógica sin acc
 
 El código de `app/lib/client/` se ejecutará desde componentes de cliente cuando el navegador esté disponible. La lectura de localStorage no formará parte del renderizado de servidor. Next.js entrega la aplicación y sus recursos; las operaciones de las tareas se realizan en el navegador.
 
-El registro adquiere un bloqueo exclusivo de Web Locks con el nombre `control-de-actividades:tareas` y lee los datos vigentes antes de escribir. Los futuros movimientos deberán usar el mismo bloqueo y preservar el límite de 10 tareas en curso, el cierre definitivo y la consistencia entre estado y fecha; esa implementación sigue pendiente.
+El registro y los movimientos adquieren el mismo bloqueo exclusivo de Web Locks, `control-de-actividades:tareas`, y leen los datos vigentes antes de escribir. HU-03 comprueba el límite de diez y rechaza la reapertura de completadas. La futura finalización deberá compartir ese bloqueo y guardar juntos estado y fecha.
 
 ## Configuración de servicios
 
@@ -85,4 +87,4 @@ No se implementarán respaldos ni restauración. Si se borran los datos del siti
 
 `node_modules/`, `.next/`, `next-env.d.ts` y `*.tsbuildinfo` corresponden a dependencias o resultados generados. El código fuente se mantiene en `app/`; los resultados de compilación no son la ubicación para desarrollar funciones.
 
-**Estado:** consulta de HU-01 y registro de HU-02 implementados, con sus pruebas. Los movimientos, su coordinación entre pestañas y el avance semanal siguen pendientes.
+**Estado:** consulta de HU-01, registro de HU-02 y movimientos de HU-03 implementados, con sus pruebas. La finalización y el avance semanal siguen pendientes.

@@ -26,4 +26,4 @@ for (const archivo of ["tareas.ts", "client/tareas.ts"]) {
 }
 
 const { default: modulo } = await import(pathToFileURL(path.join(carpetaTemporal, "client/tareas.js")).href);
-export const { leerTareas, registrarTarea, CLAVE_TAREAS } = modulo;
+export const { leerTareas, registrarTarea, moverTarea, CLAVE_TAREAS } = modulo;
