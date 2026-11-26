@@ -22,7 +22,7 @@ La propuesta sitúa la acción de creación arriba, seguida de un selector de es
 
 - **Presentación visual:** lienzo y barra lateral en gris claro luminoso, paneles blancos, acentos negros, radios de 4 px y franjas laterales por estado.
 - **Textos:** la aplicación utiliza **Nueva tarea**, **Pendiente**, **En curso** y **Completadas**. Las imágenes conservan los rótulos iniciales «Nueva Actividad», «En proceso» y «Completado».
-- **Acciones:** registro, movimiento y cierre definitivo mediante botones. No se implementó arrastrar y soltar.
+- **Acciones:** registro desde el formulario, arrastre de tarjetas en escritorio y control **Mover a** en móvil. Pasar a **Completadas** cierra la tarea definitivamente.
 - **Información del tablero:** ocupación y máximo de 10 tareas en curso y consulta del avance semanal, conforme a las [historias de usuario](../04-Casos%20de%20Uso/Historias-de-Usuario.md).
 - **Estados de la interfaz:** carga, tablero vacío, guardado en curso, errores y validación del título.
 - **Accesibilidad:** nombres de controles, enlace para saltar al contenido, foco visible y regiones de estado. La cobertura y los pendientes se detallan en las revisiones, sin declarar una auditoría completa.
@@ -31,20 +31,20 @@ Las imágenes se mantienen como referencia del prototipo, sin convertir los elem
 
 ## Estado
 
-**Interfaz implementada con verificaciones de calidad pendientes.** El diseño actual utiliza gris claro luminoso en el lienzo y la barra lateral, paneles blancos y negro como color principal. Las columnas se muestran en paralelo desde 768 px; por debajo, el selector permite consultar una columna cada vez. HU-01 permite consultar títulos, ocupación de En curso y estados de carga, vacío y error. HU-02 añade el registro. HU-03 incorpora **Pasar a En curso** y **Volver a Pendiente**, mensajes de espera, éxito y error, y conservación del foco. HU-05 añade **Completar tarea** y el cierre definitivo. HU-07 añade el panel de avance semanal con intervalo, conteo y navegación entre semanas.
+**Interfaz implementada con verificaciones de calidad pendientes.** El diseño actual utiliza gris claro luminoso en el lienzo y la barra lateral, paneles blancos y negro como color principal. Desde 768 px y con un puntero preciso, el tablero muestra tres columnas y se puede arrastrar una tarjeta activa entre ellas. Durante el arrastre, la tarjeta conserva su tamaño, colores y contenido. Con el teclado, se puede enfocar con Tab y pulsar **1**, **2** o **3** para moverla. En la vista móvil se consulta una columna a la vez. Las tarjetas activas muestran **Mover a** debajo del título, alineado con el borde izquierdo del icono y con dos destinos según su estado actual.
 
 La revisión visual inicial se describe en [HU-01](../04-Casos%20de%20Uso/HU-01.%20Consultar%20mi%20tablero.md#verificación-de-esta-entrega), y la del formulario y tareas registradas en [HU-02](../04-Casos%20de%20Uso/HU-02.%20Registrar%20un%20pendiente.md#verificación-en-navegador-y-pendientes). Las capturas del prototipo no acreditan pruebas de funcionamiento ni la compatibilidad completa. El comportamiento esperado se conserva en los requisitos y en los [flujos de una tarea](../06-Arquitectura/Flujos.md).
 
-La revisión de movimientos, teclado y límite de capacidad en producción local está en [HU-03](../04-Casos%20de%20Uso/HU-03.%20Actualizar%20lo%20que%20estoy%20haciendo.md#verificación-en-navegador-y-pendientes). Se utilizaron botones, sin implementar arrastrar y soltar.
+Las verificaciones históricas de movimientos, teclado y límite de capacidad mediante botones están en [HU-03](../04-Casos%20de%20Uso/HU-03.%20Actualizar%20lo%20que%20estoy%20haciendo.md#verificación-en-navegador-y-pendientes).
 
 ## Presentación actual
 
-La cabecera del contenido reúne **Mi tablero**, **Datos en este navegador**, la ocupación de En curso y **Nueva tarea**. Las pistas grises contienen tarjetas blancas con franja gris en Pendiente, negra en En curso y esmeralda en Completadas. Los encabezados, contadores e insignias también identifican cada estado mediante texto. Las tarjetas completadas incluyen **Tarea cerrada** y no ofrecen controles de reapertura.
+La cabecera del contenido reúne **Mi tablero**, **Datos en este navegador**, la ocupación de En curso y **Nueva tarea**. Las pistas grises contienen tarjetas blancas con franja gris en Pendiente, negra en En curso y esmeralda en Completadas. El estado se distingue en el título de la tarjeta con un reloj rojo para **Pendiente**, un icono de reproducción amarillo para **En curso** y un check verde para **Completadas**. El texto del título usa el color de su icono. Las tarjetas completadas quedan cerradas.
 
 | Elemento | Presentación implementada |
 | --- | --- |
 | Navegación | Barra lateral gris fija de 256 px desde 1024 px, con enlaces a Tablero (`/`) y Avance semanal (`/avance-semanal`) y señal de la página activa. Por debajo, cabecera negra fija de 56 px y menú lateral desplegable de 288 px con el mismo gris sobre un fondo atenuado. |
-| Columnas | Tres columnas desde 768 px, con listas desplazables mediante teclado. En móvil, selector de Pendiente, En curso y Completadas con sus contadores; las otras columnas quedan ocultas. Registrar muestra Pendiente y mover o completar correctamente muestra la columna de destino. |
+| Columnas | Tres columnas desde 768 px si hay un puntero preciso, con listas desplazables mediante teclado. En la vista móvil, selector de Pendiente, En curso y Completadas con sus contadores. Registrar muestra Pendiente. Al mover o completar se conserva la columna abierta y se actualizan los contadores. |
 | Tipografía | Plus Jakarta Sans para el texto y Geist Mono para los números. Se configuran en `app/layout.tsx` mediante `next/font/google`, que obtiene y aloja los archivos con la aplicación; el navegador no necesita solicitarlos a Google Fonts. |
 | Superficies y controles | Fondo del tablero y barra lateral en gris `#d6dfe2`, definido en `--background`; paneles y tarjetas blancos, color principal `#111111`, radios de 4 px y sombras suaves. Los separadores del sidebar, formulario, tarjetas y pie de página, y los contornos de paneles, columnas y tarjetas tienen 2 px. Botones principales negros y secundarios blancos con borde. |
 | Foco y movimiento | Contorno negro de 2 px sobre superficies claras, incluido el campo, y blanco en la cabecera negra. Los cambios de color de los botones y el contenido durante una espera no se atenúan. La entrada conserva solo el desplazamiento; los movimientos se reducen con `prefers-reduced-motion`. |
@@ -53,6 +53,14 @@ La cabecera del contenido reúne **Mi tablero**, **Datos en este navegador**, la
 Los colores y estilos comunes se concentran en `app/globals.css`; `app/_components/app-shell.tsx` contiene la navegación. El menú móvil cerrado queda oculto visualmente y fuera del recorrido de Tab y del árbol accesible. Al abrirlo, el foco pasa a **Cerrar menú**. Escape, el botón de cierre y el fondo atenuado lo cierran y devuelven el foco al botón de apertura. Tab también lo cierra al salir de sus enlaces, conservando el control de destino visible. El fondo atenuado se activa con el ratón; el cierre y Escape ofrecen la alternativa de teclado. Los enlaces cierran el menú y navegan a la vista elegida. En escritorio no se enfoca el botón móvil oculto.
 
 El ajuste anterior de fondo a `#e9ecef` se revisó en producción local a 1280 × 800 y 390 × 844, incluido el menú móvil abierto. Después se cambió el fondo a `#d6dfe2`, se aumentaron los bordes separadores a 2 px y se trasladó el avance semanal a su propia página. Las verificaciones anteriores del panel integrado y de sus enlaces por fragmento se conservan como evidencia histórica; no describen la navegación actual. Ninguna de estas revisiones visuales acredita nuevas mediciones de contraste.
+
+### Verificación del cambio de estado
+
+En la compilación de producción local arrastré una tarjeta a **En curso** y comprobé que soltarla fuera de las columnas cancela el movimiento. También probé las teclas **1**, **2** y **3** para devolverla a **Pendiente**, moverla a **En curso** y completarla.
+
+En la vista de 390 px comprobé los dos destinos de **Mover a** en cada estado activo, el rechazo de la undécima tarea en curso y la persistencia tras recargar. Al mover o completar se conservó la columna abierta. El foco quedó en el control de la tarjeta vecina o en el botón de la columna al quedar vacía. Al abrir **Completadas** pude consultar la tarea cerrada.
+
+Comprobé los iconos y los colores en los títulos, así como la alineación de **Mover a** con el icono a 320 y 390 px. La interacción táctil en un dispositivo real sigue pendiente.
 
 ## Contraste y accesibilidad actual
 
@@ -201,7 +209,7 @@ En esta revisión visual no forcé errores de lectura o escritura ni esperas pro
 
 ### Revisión posterior de HU-05
 
-Las tarjetas activas incorporan **Completar tarea** junto al movimiento entre Pendiente y En curso, con ajuste de línea en pantallas estrechas. Al cerrar, el foco pasa a la tarjeta en Completadas, que muestra la franja esmeralda y **Tarea cerrada**, sin botones de reapertura ni de finalización.
+En esa versión, las tarjetas activas mostraban **Completar tarea** junto al botón de movimiento entre Pendiente y En curso. Al cerrar, el foco pasaba a la tarjeta en Completadas, que mostraba la franja esmeralda y **Tarea cerrada**.
 
 Revisé tarjetas completadas reales de prueba en escritorio a 1280 × 800 y móvil a 390 × 844, incluido un título largo con etiquetas como texto. Se comprobaron teclado y foco, cierre desde ambas columnas, recarga y liberación de una plaza con En curso lleno, sin desbordamiento horizontal ni errores de consola observados. Esta revisión cubre el pendiente visual de tarjetas completadas del ajuste de estilo anterior. La revisión posterior de [HU-06](../04-Casos%20de%20Uso/HU-06.%20Continuar%20con%20mis%20tareas%20guardadas.md#verificación-de-fallos-y-envíos-repetidos) cubre lectura y escritura rechazadas, reintentos y envíos repetidos desde la interfaz. La revisión posterior de [HU-05](../04-Casos%20de%20Uso/HU-05.%20Completar%20una%20tarea.md#verificación-en-navegador-y-pendientes) comprueba el vencimiento de la espera.
 

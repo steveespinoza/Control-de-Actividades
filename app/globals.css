@@ -231,6 +231,24 @@
   width: 4px;
 }
 
+.capa-arrastre-tarea {
+  position: fixed;
+  inset: 0;
+  z-index: 35;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.vista-arrastre-tarea {
+  position: absolute;
+  transition: none;
+}
+
+.vista-arrastre-tarea::before {
+  width: var(--card-accent-width);
+  transition: none;
+}
+
 .erp-mono-number {
   font-family: var(--font-geist-mono), monospace;
   font-variant-numeric: tabular-nums;

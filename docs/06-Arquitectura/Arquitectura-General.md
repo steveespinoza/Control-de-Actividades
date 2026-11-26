@@ -53,8 +53,8 @@ La conservación de los datos depende del navegador. Esta decisión no fija un p
 | Base de Next.js | Página del tablero, layout en español, estilos y comandos de desarrollo, lint, tipos y compilación definidos. |
 | Consulta del tablero y localStorage | Lectura y validación implementadas en HU-01, con carga, vacío, error, columnas, títulos y ocupación de En curso. |
 | Registro de pendientes | Formulario, validación y guardado de HU-02 con Web Locks; conserva la colección vigente y solo confirma después de escribir. |
-| Movimientos entre Pendiente y En curso | Botones y guardado coordinado de HU-03, con capacidad, cierre de completadas, espera y errores. |
-| Finalización | Botón Completar tarea, fecha UTC y estado guardados juntos, cierre definitivo y repetición sin nueva escritura. |
+| Movimientos entre Pendiente y En curso | Arrastre y teclado en escritorio, control Mover a en móvil y guardado coordinado de HU-03 con verificación de capacidad. |
+| Finalización | Traslado a Completadas con fecha UTC y estado guardados juntos, cierre definitivo y repetición sin nueva escritura. |
 | Avance semanal | Intervalo y conteo en Lima, navegación entre semanas, lectura validada y error sin un cero falso. |
 | Modelo de datos | Documenta la colección local y sus reglas de validación e integridad. |
 | S3 y Vercel | Configuración conservada de S3 y destino previsto de despliegue, sin integración funcional de archivos ni despliegue verificado. |
