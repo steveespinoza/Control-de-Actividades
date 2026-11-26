@@ -1,9 +1,17 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type KeyboardEvent, type PointerEvent } from "react";
 import FormularioTarea from "./formulario-tarea";
 import { completarTarea, leerTareas, moverTarea, type LecturaTareas } from "../lib/client/tareas";
-import { MAX_TAREAS_EN_CURSO, type EstadoTarea } from "../lib/tareas";
+import { MAX_TAREAS_EN_CURSO, type EstadoTarea, type Tarea } from "../lib/tareas";
+
+const consultaEscritorio = "(min-width: 48rem) and (any-pointer: fine)";
+
+function observarVistaEscritorio(actualizar: () => void) {
+  const medio = window.matchMedia(consultaEscritorio);
+  medio.addEventListener("change", actualizar);
+  return () => medio.removeEventListener("change", actualizar);
+}
 
 const columnas: {
   estado: EstadoTarea;
@@ -11,6 +19,8 @@ const columnas: {
   vacio: string;
   headingClassName: string;
   countClassName: string;
+  titleClassName: string;
+  iconPath: string;
 }[] = [
   {
     estado: "pendiente",
@@ -18,6 +28,8 @@ const columnas: {
     vacio: "No hay tareas pendientes.",
     headingClassName: "border-slate-300 text-slate-700",
     countClassName: "bg-slate-200 text-slate-800",
+    titleClassName: "text-red-700",
+    iconPath: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z M12 7v5l3 2",
   },
   {
     estado: "en_curso",
@@ -25,6 +37,8 @@ const columnas: {
     vacio: "No hay tareas en curso.",
     headingClassName: "border-neutral-950 text-neutral-950",
     countClassName: "bg-neutral-950 text-white",
+    titleClassName: "text-yellow-700",
+    iconPath: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z M10 8l6 4-6 4V8Z",
   },
   {
     estado: "completada",
@@ -32,8 +46,47 @@ const columnas: {
     vacio: "Aún no hay tareas completadas.",
     headingClassName: "border-emerald-600 text-emerald-800",
     countClassName: "bg-emerald-100 text-emerald-800",
+    titleClassName: "text-emerald-800",
+    iconPath: "m5 12 4 4L19 6",
   },
 ];
+
+type ArrastreTarea = {
+  tarea: Tarea;
+  puntero: number;
+  x: number;
+  y: number;
+  vista?: HTMLLIElement;
+};
+
+function crearVistaArrastre(tarjeta: HTMLLIElement) {
+  const rect = tarjeta.getBoundingClientRect();
+  const estilo = getComputedStyle(tarjeta);
+  const vista = tarjeta.cloneNode(true) as HTMLLIElement;
+  vista.removeAttribute("id");
+  vista.removeAttribute("tabindex");
+  vista.classList.add("vista-arrastre-tarea");
+  vista.style.left = `${rect.left}px`;
+  vista.style.top = `${rect.top}px`;
+  vista.style.width = `${rect.width}px`;
+  vista.style.height = `${rect.height}px`;
+  vista.style.borderColor = estilo.borderColor;
+  vista.style.boxShadow = estilo.boxShadow;
+  vista.style.setProperty("--card-accent", estilo.getPropertyValue("--card-accent"));
+  vista.style.setProperty("--card-accent-width", getComputedStyle(tarjeta, "::before").width);
+
+  const capa = document.createElement("ul");
+  capa.className = "capa-arrastre-tarea";
+  capa.setAttribute("aria-hidden", "true");
+  capa.append(vista);
+  document.body.append(capa);
+  return vista;
+}
+
+function destinoEnPunto(x: number, y: number) {
+  const zona = document.elementFromPoint(x, y)?.closest<HTMLElement>("[data-zona-arrastre]");
+  return columnas.find((columna) => columna.estado === zona?.dataset.zonaArrastre)?.estado ?? null;
+}
 
 const erroresMovimiento = {
   acceso: "No se pudieron leer las tareas. Comprueba que el navegador permita el almacenamiento local y vuelve a intentarlo.",
@@ -52,28 +105,98 @@ export default function Tablero() {
   const [formularioVisible, setFormularioVisible] = useState(false);
   const [registroConfirmado, setRegistroConfirmado] = useState(false);
   const [columnaMovil, setColumnaMovil] = useState<EstadoTarea>("pendiente");
+  const vistaEscritorio = useSyncExternalStore(
+    observarVistaEscritorio,
+    () => window.matchMedia(consultaEscritorio).matches,
+    () => false,
+  );
+  const arrastreTarea = useRef<ArrastreTarea | null>(null);
+  const [idArrastrando, setIdArrastrando] = useState<string | null>(null);
+  const [destinoArrastre, setDestinoArrastre] = useState<EstadoTarea | null>(null);
   const botonNuevaTarea = useRef<HTMLButtonElement>(null);
+  const botonColumnaMovil = useRef<HTMLButtonElement>(null);
   const enfocarTrasReintento = useRef(false);
   const devolverFoco = useRef(false);
   const [movimientoActual, setMovimientoActual] = useState<{ id: string; destino: EstadoTarea } | null>(null);
   const idMoviendo = movimientoActual?.id ?? null;
   const movimientoEnCurso = useRef(false);
-  const focoTarea = useRef<string | null>(null);
+  const focoTarea = useRef<{ idTarjeta: string; idVecina?: string } | null>(null);
   const [mensajeMovimiento, setMensajeMovimiento] = useState<{ tipo: "exito" | "error"; texto: string } | null>(null);
+  const movimientoDisponible = idMoviendo === null && !formularioVisible;
+
+  function terminarArrastre(puntero: number) {
+    const arrastre = arrastreTarea.current;
+    if (arrastre?.puntero !== puntero) return;
+
+    arrastreTarea.current = null;
+    arrastre.vista?.parentElement?.remove();
+    setIdArrastrando(null);
+    setDestinoArrastre(null);
+  }
+
+  function prepararArrastre(evento: PointerEvent<HTMLLIElement>, tarea: Tarea) {
+    if (!movimientoDisponible || arrastreTarea.current || !evento.isPrimary || evento.button !== 0) return;
+    if (evento.pointerType === "touch") return;
+
+    evento.currentTarget.setPointerCapture(evento.pointerId);
+    arrastreTarea.current = { tarea, puntero: evento.pointerId, x: evento.clientX, y: evento.clientY };
+  }
+
+  function arrastrar(evento: PointerEvent<HTMLLIElement>) {
+    const arrastre = arrastreTarea.current;
+    if (arrastre?.puntero !== evento.pointerId) return;
+
+    const dx = evento.clientX - arrastre.x;
+    const dy = evento.clientY - arrastre.y;
+    if (!arrastre.vista) {
+      if (Math.hypot(dx, dy) < 6) return;
+      arrastre.vista = crearVistaArrastre(evento.currentTarget);
+      setIdArrastrando(arrastre.tarea.id);
+    }
+    arrastre.vista.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
+
+    const destino = destinoEnPunto(evento.clientX, evento.clientY);
+    setDestinoArrastre(destino === arrastre.tarea.estado ? null : destino);
+  }
+
+  function soltarTarjeta(evento: PointerEvent<HTMLLIElement>) {
+    const arrastre = arrastreTarea.current;
+    if (arrastre?.puntero !== evento.pointerId) return;
+
+    const destino = arrastre.vista && destinoEnPunto(evento.clientX, evento.clientY);
+    terminarArrastre(evento.pointerId);
+    if (destino && destino !== arrastre.tarea.estado) void mover(arrastre.tarea.id, destino);
+  }
+
+  function moverConTeclado(evento: KeyboardEvent<HTMLLIElement>, tarea: Tarea) {
+    const arrastre = arrastreTarea.current;
+    if (arrastre) {
+      if (evento.key === "Escape") terminarArrastre(arrastre.puntero);
+      return;
+    }
+    if (evento.target !== evento.currentTarget || evento.altKey || evento.ctrlKey || evento.metaKey || evento.repeat) return;
+
+    const destino = columnas[Number(evento.key) - 1];
+    if (destino && destino.estado !== tarea.estado) {
+      evento.preventDefault();
+      void mover(tarea.id, destino.estado);
+    }
+  }
 
   async function mover(id: string, destino: EstadoTarea) {
     if (movimientoEnCurso.current || formularioVisible) return;
+    const idTarjeta = `tarea-${id}`;
+    const origen = vistaEscritorio ? null : document.getElementById(idTarjeta);
+    const vecina = origen?.nextElementSibling ?? origen?.previousElementSibling;
+
     movimientoEnCurso.current = true;
     setMovimientoActual({ id, destino });
     setRegistroConfirmado(false);
     setMensajeMovimiento(null);
 
     const resultado = destino === "completada" ? await completarTarea(id) : await moverTarea(id, destino);
-    focoTarea.current = id;
+    focoTarea.current = { idTarjeta, idVecina: vecina?.id };
     if (resultado.tareas) setConsulta({ estado: "lista", tareas: resultado.tareas });
-    if (resultado.estado === "guardada") {
-      setColumnaMovil(destino);
-    }
     setMensajeMovimiento(
       resultado.estado === "guardada"
         ? {
@@ -89,11 +212,22 @@ export default function Tablero() {
     setMovimientoActual(null);
   }
 
+  useEffect(() => () => {
+    arrastreTarea.current?.vista?.parentElement?.remove();
+  }, []);
+
   useEffect(() => {
-    if (focoTarea.current && !idMoviendo) {
-      const accion = document.getElementById(`mover-${focoTarea.current}`);
-      (accion ?? document.getElementById(`tarea-${focoTarea.current}`) ?? document.getElementById("contenido"))?.focus();
-      focoTarea.current = null;
+    const foco = focoTarea.current;
+    if (!foco || idMoviendo) return;
+
+    focoTarea.current = null;
+    const tarjeta = [foco.idTarjeta, foco.idVecina]
+      .map((id) => id ? document.getElementById(id) : null)
+      .find((elemento) => elemento?.getClientRects().length);
+    if (tarjeta) {
+      (tarjeta.querySelector("select") ?? tarjeta).focus();
+    } else {
+      (botonColumnaMovil.current ?? botonNuevaTarea.current)?.focus();
     }
   }, [consulta, idMoviendo, columnaMovil]);
 
@@ -160,7 +294,7 @@ export default function Tablero() {
           type="button"
           aria-expanded={formularioVisible}
           aria-controls={formularioVisible ? "formulario-tarea" : undefined}
-          disabled={consulta.estado !== "lista" || formularioVisible || idMoviendo !== null}
+          disabled={consulta.estado !== "lista" || !movimientoDisponible || idArrastrando !== null}
           onClick={() => {
             setRegistroConfirmado(false);
             setMensajeMovimiento(null);
@@ -296,14 +430,22 @@ export default function Tablero() {
               Actividades
             </h2>
           </div>
-          <p className="text-xs font-medium text-slate-600">
-            Máximo {MAX_TAREAS_EN_CURSO} tareas simultáneas en curso · Cierre definitivo al completar
-          </p>
+          <div className="text-xs font-medium text-slate-600 sm:text-right">
+            {vistaEscritorio && (
+              <>
+                <p>Arrastra una tarjeta a otra columna para cambiar su estado.</p>
+                <p id="ayuda-mover-teclado">
+                  Con Tab, enfoca una tarjeta y pulsa 1 para Pendiente, 2 para En curso o 3 para Completadas.
+                </p>
+              </>
+            )}
+            <p>Máximo {MAX_TAREAS_EN_CURSO} tareas simultáneas en curso · Cierre definitivo al completar</p>
+          </div>
         </div>
 
         <nav
           aria-label="Estados de las tareas"
-          className="mb-4 grid grid-cols-3 gap-1 rounded border-2 border-slate-200 bg-slate-200/70 p-1 md:hidden"
+          className={`mb-4 grid-cols-3 gap-1 rounded border-2 border-slate-200 bg-slate-200/70 p-1 ${vistaEscritorio ? "hidden" : "grid"}`}
         >
           {columnas.map((columna) => {
             const cantidad = consulta.tareas.filter((t) => t.estado === columna.estado).length;
@@ -311,6 +453,7 @@ export default function Tablero() {
             return (
               <button
                 key={columna.estado}
+                ref={!vistaEscritorio && activa ? botonColumnaMovil : undefined}
                 type="button"
                 aria-pressed={activa}
                 aria-controls={`seccion-columna-${columna.estado}`}
@@ -336,7 +479,7 @@ export default function Tablero() {
         </nav>
 
         <div
-          className="grid grid-cols-1 items-start gap-5 md:grid-cols-3"
+          className={`grid items-start gap-5 ${vistaEscritorio ? "grid-cols-3" : "grid-cols-1"}`}
           aria-label="Tareas por estado"
         >
           {columnas.map((columna) => {
@@ -350,9 +493,11 @@ export default function Tablero() {
                 key={columna.estado}
                 id={`seccion-columna-${columna.estado}`}
                 data-estado={columna.estado}
+                data-zona-arrastre={vistaEscritorio ? columna.estado : undefined}
+                data-destino-arrastre={destinoArrastre === columna.estado || undefined}
                 aria-labelledby={`columna-${columna.estado}`}
-                className={`columna-tareas min-w-0 flex-col gap-3 rounded border-2 border-slate-200/80 bg-slate-100/70 p-3.5 ${
-                  visibleEnMovil ? "flex" : "hidden md:flex"
+                className={`columna-tareas min-w-0 flex-col gap-3 rounded border-2 border-slate-200/80 bg-slate-100/70 p-3.5 data-[destino-arrastre=true]:border-neutral-950 data-[destino-arrastre=true]:bg-white ${
+                  vistaEscritorio || visibleEnMovil ? "flex" : "hidden"
                 }`}
               >
                 <header
@@ -385,87 +530,65 @@ export default function Tablero() {
                   <ul
                     tabIndex={0}
                     aria-label={`Tareas en ${columna.titulo}`}
-                    className="space-y-3 overflow-y-auto overscroll-contain p-1 md:max-h-[calc(100dvh-18rem)]"
+                    className={`space-y-3 overflow-y-auto overscroll-contain p-1 ${vistaEscritorio ? "max-h-[calc(100dvh-18rem)]" : ""}`}
                   >
-                    {tareasColumna.map((tarea) => (
-                      <li
-                        key={tarea.id}
-                        id={`tarea-${tarea.id}`}
-                        tabIndex={-1}
-                        aria-busy={idMoviendo === tarea.id}
-                        className="erp-interactive-card p-4"
-                      >
-                        <div className="mb-2 flex items-center justify-between gap-2">
-                          <span
-                            className={`rounded border px-2 py-0.5 text-[11px] font-extrabold uppercase tracking-wide ${
-                              tarea.estado === "completada"
-                                ? "border-emerald-200 bg-emerald-50 text-emerald-800"
-                                : tarea.estado === "en_curso"
-                                  ? "border-neutral-900 bg-neutral-950 text-white"
-                                  : "border-slate-300 bg-slate-100 text-slate-700"
-                            }`}
-                          >
-                            {columna.titulo}
-                          </span>
-                        </div>
+                    {tareasColumna.map((tarea) => {
+                      const activa = tarea.estado !== "completada";
+                      const movibleEnEscritorio = vistaEscritorio && activa;
 
-                        <p className="text-sm font-semibold leading-6 text-neutral-950 whitespace-pre-wrap [overflow-wrap:anywhere]">
-                          {tarea.titulo}
-                        </p>
-
-                        {tarea.estado !== "completada" ? (
-                          <div className="mt-4 flex flex-wrap gap-2 border-t-2 border-slate-100 pt-3">
-                            <button
-                              id={`mover-${tarea.id}`}
-                              type="button"
-                              disabled={idMoviendo !== null || formularioVisible}
-                              aria-label={`${tarea.estado === "pendiente" ? "Pasar a En curso" : "Volver a Pendiente"}: ${tarea.titulo}`}
-                              onClick={() =>
-                                mover(
-                                  tarea.id,
-                                  tarea.estado === "pendiente" ? "en_curso" : "pendiente",
-                                )
-                              }
-                              className="min-h-11 rounded border border-neutral-900 bg-neutral-950 px-3 py-2 text-xs font-bold text-white enabled:hover:bg-black disabled:cursor-wait disabled:border-slate-300 disabled:bg-slate-200 disabled:text-slate-600"
-                            >
-                              {idMoviendo === tarea.id && movimientoActual?.destino !== "completada"
-                                ? "Guardando…"
-                                : tarea.estado === "pendiente"
-                                  ? "Pasar a En curso"
-                                  : "Volver a Pendiente"}
-                            </button>
-
-                            <button
-                              type="button"
-                              disabled={idMoviendo !== null || formularioVisible}
-                              aria-label={`Completar tarea: ${tarea.titulo}`}
-                              onClick={() => mover(tarea.id, "completada")}
-                              className="min-h-11 rounded border border-slate-300 bg-white px-3 py-2 text-xs font-bold text-neutral-900 enabled:hover:border-neutral-950 enabled:hover:bg-neutral-100 disabled:cursor-wait disabled:bg-slate-100 disabled:text-slate-600"
-                            >
-                              {idMoviendo === tarea.id && movimientoActual?.destino === "completada"
-                                ? "Completando…"
-                                : "Completar tarea"}
-                            </button>
-                          </div>
-                        ) : (
-                          <p className="mt-3 flex items-center gap-2 border-t-2 border-slate-100 pt-3 text-xs font-bold text-emerald-800">
+                      return (
+                        <li
+                          key={tarea.id}
+                          id={`tarea-${tarea.id}`}
+                          tabIndex={movibleEnEscritorio ? 0 : -1}
+                          aria-busy={idMoviendo === tarea.id}
+                          aria-describedby={movibleEnEscritorio ? "ayuda-mover-teclado" : undefined}
+                          aria-keyshortcuts={movibleEnEscritorio ? "1 2 3" : undefined}
+                          onPointerDown={movibleEnEscritorio ? (evento) => prepararArrastre(evento, tarea) : undefined}
+                          onPointerMove={activa ? arrastrar : undefined}
+                          onPointerUp={activa ? soltarTarjeta : undefined}
+                          onLostPointerCapture={activa ? (evento) => terminarArrastre(evento.pointerId) : undefined}
+                          onPointerCancel={activa ? (evento) => terminarArrastre(evento.pointerId) : undefined}
+                          onKeyDown={movibleEnEscritorio ? (evento) => moverConTeclado(evento, tarea) : undefined}
+                          className={`erp-interactive-card p-4 ${movibleEnEscritorio && movimientoDisponible ? "cursor-grab select-none active:cursor-grabbing" : ""} ${idArrastrando === tarea.id ? "opacity-0" : ""}`}
+                        >
+                          <p className={`flex items-start gap-2 text-sm font-semibold leading-6 ${columna.titleClassName}`}>
                             <svg
                               aria-hidden="true"
-                              width="16"
-                              height="16"
                               viewBox="0 0 24 24"
                               fill="none"
                               stroke="currentColor"
-                              strokeWidth="2.2"
-                              className="shrink-0 text-emerald-600"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="mt-1 size-4 shrink-0"
                             >
-                              <path d="m5 12 4 4L19 6" />
+                              <path d={columna.iconPath} />
                             </svg>
-                            Tarea cerrada
+                            <span className="sr-only">{columna.titulo}:</span>
+                            <span className="min-w-0 whitespace-pre-wrap [overflow-wrap:anywhere]">{tarea.titulo}</span>
                           </p>
-                        )}
-                      </li>
-                    ))}
+
+                          {!vistaEscritorio && activa && (
+                            <select
+                              aria-label={`Mover a otro estado: ${tarea.titulo}`}
+                              value=""
+                              disabled={!movimientoDisponible}
+                              onChange={(evento) => {
+                                const destino = columnas.find((opcion) => opcion.estado === evento.currentTarget.value);
+                                if (destino && destino.estado !== tarea.estado) void mover(tarea.id, destino.estado);
+                              }}
+                              className="mt-2 block min-h-9 max-w-full cursor-pointer rounded-full border border-slate-500 bg-slate-100 py-1 pr-2 pl-3 text-xs font-bold text-slate-800 disabled:cursor-default disabled:text-slate-600"
+                            >
+                              <option value="" disabled hidden>Mover a</option>
+                              {columnas.filter((opcion) => opcion.estado !== tarea.estado).map((opcion) => (
+                                <option key={opcion.estado} value={opcion.estado}>{opcion.titulo}</option>
+                              ))}
+                            </select>
+                          )}
+                        </li>
+                      );
+                    })}
                   </ul>
                 )}
               </section>
